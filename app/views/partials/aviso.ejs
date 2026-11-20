@@ -1,0 +1,13 @@
+<%#
+  Aviso en línea. Parámetros: tipo, titulo, mensaje, detalle.
+  tipo: 'error' (role=alert, se anuncia de inmediato) | 'ok' (role=status) | 'info'
+%>
+<% const esError = tipo === 'error'; %>
+<div class="aviso aviso--<%= tipo %>" role="<%= esError ? 'alert' : 'status' %>" data-entrar>
+  <svg class="aviso__icono" aria-hidden="true"><use href="#i-<%= esError ? 'alerta' : 'ok' %>"/></svg>
+  <div>
+    <% if (typeof titulo !== 'undefined' && titulo) { %><p class="aviso__titulo"><%= titulo %></p><% } %>
+    <p><%= mensaje %></p>
+    <% if (typeof detalle !== 'undefined' && detalle) { %><p class="aviso__codigo"><%= detalle %></p><% } %>
+  </div>
+</div>

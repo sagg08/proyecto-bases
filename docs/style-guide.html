@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guía visual · Domicilios</title>
+  <!-- Fuentes locales (tras npm install). Si no existen, cae a system-ui sin romperse. -->
+  <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans/400.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans/500.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans/600.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans/700.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-mono/400.css">
+  <link rel="stylesheet" href="../app/public/css/tokens.css">
+  <link rel="stylesheet" href="../app/public/css/base.css">
+</head>
+<body>
+<a class="saltar" href="#main">Saltar al contenido</a>
+
+<!-- Íconos SVG reutilizables (trazo 1.75, estilo Lucide) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pedido" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-cliente" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+  <symbol id="i-tienda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9h18M10 20v-6h4v6"/></symbol>
+  <symbol id="i-producto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></symbol>
+  <symbol id="i-moto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3"/><circle cx="18.5" cy="17" r="3"/><path d="M8.5 17h7l-3-7H9M15 6h2l1.5 8"/></symbol>
+  <symbol id="i-reporte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
+  <symbol id="i-mas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-avanzar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="lateral">
+    <div class="marca"><span class="marca__nombre">Domicilios</span><span class="marca__caso">caso 7</span></div>
+    <nav class="nav" aria-label="Principal">
+      <span class="nav__grupo seccion">Operación</span>
+      <a class="nav__enlace" href="#" aria-current="page"><svg aria-hidden="true"><use href="#i-pedido"/></svg>Pedidos</a>
+      <a class="nav__enlace" href="#"><svg aria-hidden="true"><use href="#i-moto"/></svg>Repartidores</a>
+      <span class="nav__grupo seccion">Catálogo</span>
+      <a class="nav__enlace" href="#"><svg aria-hidden="true"><use href="#i-cliente"/></svg>Clientes</a>
+      <a class="nav__enlace" href="#"><svg aria-hidden="true"><use href="#i-tienda"/></svg>Restaurantes</a>
+      <a class="nav__enlace" href="#"><svg aria-hidden="true"><use href="#i-producto"/></svg>Productos y combos</a>
+      <span class="nav__grupo seccion">Análisis</span>
+      <a class="nav__enlace" href="#"><svg aria-hidden="true"><use href="#i-reporte"/></svg>Reportes</a>
+    </nav>
+  </aside>
+
+  <main class="principal" id="main" tabindex="-1">
+    <div class="contenido" style="display:grid; gap: var(--s-7);">
+
+      <!-- ===== Pantalla: detalle de pedido ===== -->
+      <section style="display:grid; gap: var(--s-5);">
+        <header class="encabezado" style="margin-bottom:0">
+          <div class="encabezado__texto">
+            <nav class="migas" aria-label="Migas"><a href="#">Pedidos</a> / <span class="mono">#0142</span></nav>
+            <h1 class="titulo">Pedido <span class="mono">#0142</span></h1>
+            <p class="texto">Laura Gómez Rincón pidió a <strong>Asadero El Llanero</strong> · Cra 33 # 15-40, Barzal, Villavicencio</p>
+          </div>
+          <div class="acciones">
+            <span class="estado estado--camino">En camino</span>
+            <button class="boton boton--primario" type="button"><svg aria-hidden="true"><use href="#i-avanzar"/></svg>Marcar entregado</button>
+          </div>
+        </header>
+
+        <div class="aviso aviso--ok" role="status" data-entrar>
+          <svg class="aviso__icono" aria-hidden="true"><use href="#i-ok"/></svg>
+          <div><p class="aviso__titulo">Repartidor asignado</p><p>Andrés Pardo (moto, placa <span class="mono">KTM-42F</span>) lleva el pedido.</p></div>
+        </div>
+
+        <div class="comanda">
+          <div style="display:grid; gap: var(--s-4);">
+            <h2 class="seccion">Productos</h2>
+            <div class="comanda__lineas">
+              <div class="comanda__linea"><span class="cant">2×</span><span>Mamona al estilo llanero (porción)</span><span class="num">$ 64.000</span></div>
+              <div class="comanda__linea"><span class="cant">1×</span><span>Combo hayaca + jugo de maracuyá</span><span class="num">$ 18.500</span></div>
+              <div class="comanda__linea"><span class="cant">3×</span><span>Gaseosa 400 ml</span><span class="num">$ 10.500</span></div>
+              <div class="comanda__linea"><span class="cant"></span><span style="color:var(--ink-3)">Costo de envío</span><span class="num">$ 4.500</span></div>
+            </div>
+            <div class="comanda__total"><span>Total · tarjeta</span><span class="num">$ 97.500</span></div>
+          </div>
+
+          <div style="display:grid; gap: var(--s-4); min-width: 17rem; align-content:start;">
+            <h2 class="seccion">Historial de estados</h2>
+            <ol class="riel">
+              <li class="riel__paso riel__paso--hecho"><span class="riel__punto"></span><div><p class="riel__nombre">Recibido</p></div><time class="riel__hora">12:04</time></li>
+              <li class="riel__paso riel__paso--hecho"><span class="riel__punto"></span><div><p class="riel__nombre">En preparación</p><p class="riel__nota">Confirmado por el restaurante</p></div><time class="riel__hora">12:07</time></li>
+              <li class="riel__paso riel__paso--actual" aria-current="step"><span class="riel__punto"></span><div><p class="riel__nombre">En camino</p></div><time class="riel__hora">12:31</time></li>
+              <li class="riel__paso riel__paso--pendiente"><span class="riel__punto"></span><div><p class="riel__nombre">Entregado</p></div><span class="riel__hora">pendiente</span></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Pantalla: lista de pedidos ===== -->
+      <section style="display:grid; gap: var(--s-4);">
+        <div class="encabezado" style="margin-bottom:0">
+          <h2 class="subtitulo">Pedidos de hoy</h2>
+          <a class="boton boton--primario" href="#"><svg aria-hidden="true"><use href="#i-mas"/></svg>Nuevo pedido</a>
+        </div>
+        <form class="filtros" role="search">
+          <div class="campo"><label class="campo__etiqueta" for="f-estado">Estado</label>
+            <select class="selector" id="f-estado" name="estado"><option>Todos</option><option>Recibido</option><option>En preparación</option><option>En camino</option><option>Entregado</option><option>Cancelado</option></select></div>
+          <div class="campo"><label class="campo__etiqueta" for="f-rest">Restaurante</label>
+            <input class="entrada" id="f-rest" name="restaurante" placeholder="Ej. Asadero El Llanero…" autocomplete="off"></div>
+          <button class="boton boton--secundario" type="submit">Filtrar</button>
+        </form>
+        <div class="tabla-marco">
+          <table class="tabla">
+            <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col">Restaurante</th><th scope="col">Estado</th><th scope="col" class="num">Total</th><th scope="col" class="num">Creado</th><th scope="col"><span class="sr-only" style="position:absolute;left:-9999px">Acciones</span></th></tr></thead>
+            <tbody>
+              <tr><td class="id">#0142</td><td>Laura Gómez Rincón</td><td>Asadero El Llanero</td><td><span class="estado estado--camino">En camino</span></td><td class="num">$ 97.500</td><td class="num mono">12:04</td><td class="acciones-celda"><a class="boton boton--fantasma" href="#">Ver</a></td></tr>
+              <tr><td class="id">#0141</td><td>Camilo Restrepo Díaz</td><td>Sushi Kenji</td><td><span class="estado estado--preparacion">En preparación</span></td><td class="num">$ 58.900</td><td class="num mono">11:52</td><td class="acciones-celda"><a class="boton boton--fantasma" href="#">Ver</a></td></tr>
+              <tr><td class="id">#0140</td><td>María José Vanegas</td><td>Pizzería Don Vito</td><td><span class="estado estado--entregado">Entregado</span></td><td class="num">$ 41.000</td><td class="num mono">11:20</td><td class="acciones-celda"><a class="boton boton--fantasma" href="#">Ver</a></td></tr>
+              <tr><td class="id">#0139</td><td>Julián Ortiz</td><td>Arepas La 40</td><td><span class="estado estado--recibido">Recibido</span></td><td class="num">$ 22.300</td><td class="num mono">11:18</td><td class="acciones-celda"><a class="boton boton--fantasma" href="#">Ver</a></td></tr>
+              <tr><td class="id">#0138</td><td>Natalia Cruz Peña</td><td>Asadero El Llanero</td><td><span class="estado estado--cancelado">Cancelado</span></td><td class="num">$ 35.000</td><td class="num mono">10:47</td><td class="acciones-celda"><a class="boton boton--fantasma" href="#">Ver</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== Pantalla: formulario con error de la BD ===== -->
+      <section style="display:grid; gap: var(--s-4);">
+        <h2 class="subtitulo">Nuevo repartidor</h2>
+        <div class="aviso aviso--error" role="alert">
+          <svg class="aviso__icono" aria-hidden="true"><use href="#i-alerta"/></svg>
+          <div><p class="aviso__titulo">No se guardó el repartidor</p><p>La placa <span class="mono">KTM-42F</span> ya pertenece a otro repartidor. Revisa la placa e inténtalo de nuevo.</p><p class="aviso__codigo">MySQL 1062 · UNIQUE(placa)</p></div>
+        </div>
+        <form class="formulario" novalidate>
+          <fieldset class="grupo">
+            <legend class="seccion">Datos personales</legend>
+            <div class="fila">
+              <div class="campo"><label class="campo__etiqueta" for="nombres">Nombres<span class="req" aria-hidden="true">*</span></label><input class="entrada" id="nombres" name="nombres" autocomplete="given-name" value="Andrés Felipe" required></div>
+              <div class="campo"><label class="campo__etiqueta" for="ape1">Primer apellido<span class="req" aria-hidden="true">*</span></label><input class="entrada" id="ape1" name="primer_apellido" autocomplete="family-name" value="Pardo" required></div>
+            </div>
+            <div class="fila">
+              <div class="campo"><label class="campo__etiqueta" for="doc">Cédula<span class="req" aria-hidden="true">*</span></label><input class="entrada mono" id="doc" name="documento" inputmode="numeric" spellcheck="false" value="1121845532" required><p class="campo__ayuda">Solo números, sin puntos.</p></div>
+              <div class="campo"><label class="campo__etiqueta" for="tel">Teléfono<span class="req" aria-hidden="true">*</span></label><input class="entrada mono" id="tel" name="telefono" type="tel" autocomplete="tel" value="3214567890" required></div>
+            </div>
+          </fieldset>
+          <fieldset class="grupo">
+            <legend class="seccion">Vehículo</legend>
+            <div class="fila">
+              <div class="campo"><label class="campo__etiqueta" for="veh">Tipo<span class="req" aria-hidden="true">*</span></label><select class="selector" id="veh" name="tipo_vehiculo"><option>moto</option><option>bicicleta</option><option>carro</option></select></div>
+              <div class="campo campo--error"><label class="campo__etiqueta" for="placa">Placa<span class="req" aria-hidden="true">*</span></label><input class="entrada mono" id="placa" name="placa" value="KTM-42F" spellcheck="false" aria-invalid="true" aria-describedby="placa-err"><p class="campo__error" id="placa-err">Esta placa ya está registrada.</p></div>
+            </div>
+          </fieldset>
+          <div class="acciones">
+            <button class="boton boton--primario" type="submit">Guardar repartidor</button>
+            <a class="boton boton--fantasma" href="#">Cancelar</a>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== Piezas sueltas ===== -->
+      <section style="display:grid; gap: var(--s-5);">
+        <h2 class="subtitulo">Piezas</h2>
+        <div class="acciones">
+          <button class="boton boton--primario" type="button">Primario</button>
+          <button class="boton boton--secundario" type="button">Secundario</button>
+          <button class="boton boton--fantasma" type="button">Fantasma</button>
+          <button class="boton boton--peligro" type="button">Eliminar</button>
+          <button class="boton boton--primario" type="button" aria-busy="true">Guardando</button>
+          <button class="boton boton--secundario" type="button" disabled>Deshabilitado</button>
+        </div>
+        <div class="acciones">
+          <span class="estado estado--recibido">Recibido</span>
+          <span class="estado estado--preparacion">En preparación</span>
+          <span class="estado estado--camino">En camino</span>
+          <span class="estado estado--entregado">Entregado</span>
+          <span class="estado estado--cancelado">Cancelado</span>
+          <span class="nota"><span class="nota__barra" aria-hidden="true">★★★★☆</span> 4/5</span>
+        </div>
+        <details class="confirmar">
+          <summary class="boton boton--secundario">Eliminar cliente <span class="mono">#0031</span></summary>
+          <div class="confirmar__panel">
+            <span>Se borran también sus teléfonos. No se puede si tiene pedidos.</span>
+            <button class="boton boton--peligro" type="button">Sí, eliminar</button>
+          </div>
+        </details>
+        <div class="vacio">
+          <p class="subtitulo" style="color:var(--ink)">Aún no hay calificaciones</p>
+          <p class="texto">Un pedido se puede calificar cuando su estado es "entregado".</p>
+          <a class="boton boton--secundario" href="#">Ver pedidos entregados</a>
+        </div>
+        <dl class="datos">
+          <dt>Edad (derivada)</dt><dd class="mono">24 años</dd>
+          <dt>Tiempo de entrega</dt><dd class="mono">38 min</dd>
+          <dt>Teléfonos</dt><dd class="mono">3104558821 · 3009127734</dd>
+        </dl>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

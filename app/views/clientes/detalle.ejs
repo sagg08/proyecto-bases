@@ -1,0 +1,39 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/clientes">Clientes</a> / <span class="mono"><%= fmt.id(cliente.id_cliente) %></span></nav>
+    <h1 class="titulo"><%= fmt.nombre(cliente) %></h1>
+    <p class="texto"><%= cliente.email %></p>
+  </div>
+  <div class="acciones">
+    <a class="boton boton--secundario" href="/clientes/<%= cliente.id_cliente %>/editar"><svg aria-hidden="true"><use href="#i-lapiz"/></svg>Editar</a>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+
+<section class="bloque" aria-labelledby="datos-titulo">
+  <h2 class="seccion" id="datos-titulo">Datos</h2>
+  <dl class="datos">
+    <dt>Fecha de nacimiento</dt><dd class="mono"><%= cliente.fecha_nacimiento %></dd>
+    <dt>Edad</dt><dd class="mono"><%= cliente.edad %> años</dd>
+    <dt>Teléfonos</dt><dd class="mono"><%= telefonos.join(' · ') %></dd>
+    <dt>Registrado</dt><dd><%= fmt.fecha(cliente.fecha_registro) %></dd>
+    <dt>Pedidos</dt><dd class="mono"><%= cliente.num_pedidos %></dd>
+  </dl>
+</section>
+
+<section class="bloque bloque--peligro" aria-labelledby="peligro-titulo">
+  <h2 class="seccion" id="peligro-titulo">Eliminar</h2>
+  <details class="confirmar">
+    <summary class="boton boton--secundario">Eliminar cliente</summary>
+    <form class="confirmar__panel" action="/clientes/<%= cliente.id_cliente %>/eliminar" method="post">
+      <span><%= cliente.num_pedidos > 0
+        ? 'Tiene pedidos registrados: la base de datos rechazará el borrado para conservar el historial.'
+        : 'Se borrarán también sus teléfonos. Esta acción no se puede deshacer.' %></span>
+      <button class="boton boton--peligro" type="submit">Sí, eliminar</button>
+    </form>
+  </details>
+</section>
+<%- include('../partials/pie') %>

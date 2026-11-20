@@ -1,0 +1,31 @@
+<%- include('partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Panel de domicilios</h1>
+    <p class="texto">Opera la plataforma sin escribir SQL. Cada acción llama un procedimiento almacenado de MySQL; si una regla del negocio no se cumple, verás el motivo junto al dato.</p>
+  </div>
+</header>
+
+<ol class="guia">
+  <% navegacion.flatMap((g) => g.items).forEach((item, i) => { %>
+    <li class="guia__paso">
+      <span class="guia__num mono"><%= String(i + 1).padStart(2, '0') %></span>
+      <div>
+        <% if (item.listo) { %>
+          <a class="guia__titulo" href="<%= item.ruta %>"><%= item.texto %></a>
+        <% } else { %>
+          <span class="guia__titulo guia__titulo--pronto"><%= item.texto %> <span class="nav__pronto">pronto</span></span>
+        <% } %>
+        <p class="guia__texto"><%= {
+          '/pedidos': 'Crear pedidos, asignar repartidor y avanzar su estado hasta entregado, o cancelarlo.',
+          '/repartidores': 'Registrar repartidores con su vehículo (la bicicleta no lleva placa).',
+          '/clientes': 'Registrar clientes con uno o varios teléfonos. La edad se calcula sola.',
+          '/restaurantes': 'Restaurantes afiliados con su NIT y fecha de afiliación.',
+          '/productos': 'Menú de cada restaurante, incluidos los combos.',
+          '/reportes': 'Consultas del negocio: ventas, tiempos de entrega y calificaciones.',
+        }[item.ruta] %></p>
+      </div>
+    </li>
+  <% }) %>
+</ol>
+<%- include('partials/pie') %>

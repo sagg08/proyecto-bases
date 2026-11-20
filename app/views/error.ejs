@@ -1,0 +1,12 @@
+<%- include('partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <p class="seccion mono">Error <%= status %></p>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+<%- include('partials/aviso', { tipo: 'error', titulo: null, mensaje, detalle }) %>
+<div class="acciones espacio-arriba">
+  <a class="boton boton--secundario" href="/">Ir al inicio</a>
+</div>
+<%- include('partials/pie') %>

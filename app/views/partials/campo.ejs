@@ -1,0 +1,12 @@
+<%#
+  Campo de formulario estándar con etiqueta visible, ayuda y error debajo.
+  Parámetros: id, etiqueta, req, valor, error, tipo (text), attrs (texto extra), ayuda
+%>
+<% const t = (typeof tipo !== 'undefined' && tipo) ? tipo : 'text'; const a = (typeof ayuda !== 'undefined') ? ayuda : null; const ex = (typeof attrs !== 'undefined') ? attrs : ''; %>
+<div class="campo<%= error ? ' campo--error' : '' %>">
+  <label class="campo__etiqueta" for="<%= id %>"><%= etiqueta %><% if (req) { %><span class="req" aria-hidden="true">*</span><% } %></label>
+  <input class="entrada<%= t === 'date' ? ' mono' : '' %>" id="<%= id %>" name="<%= id %>" type="<%= t %>" value="<%= valor %>"
+         <%- req ? 'required' : '' %> <%- ex %>
+         <%- error ? `aria-invalid="true" aria-describedby="${id}-error"` : (a ? `aria-describedby="${id}-ayuda"` : '') %>>
+  <% if (error) { %><p class="campo__error" id="<%= id %>-error"><%= error %></p><% } else if (a) { %><p class="campo__ayuda" id="<%= id %>-ayuda"><%= a %></p><% } %>
+</div>

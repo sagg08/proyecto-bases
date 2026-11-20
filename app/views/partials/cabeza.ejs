@@ -1,0 +1,45 @@
+<%#
+  Plantilla común (parte de arriba). Cada vista empieza incluyendo este parcial
+  y termina incluyendo pie.ejs. Usa: titulo, activo (ruta resaltada), navegacion.
+%>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= titulo %> · Domicilios</title>
+  <meta name="theme-color" content="#f8f6f2">
+  <link rel="stylesheet" href="/fuentes/plex-sans/400.css">
+  <link rel="stylesheet" href="/fuentes/plex-sans/500.css">
+  <link rel="stylesheet" href="/fuentes/plex-sans/600.css">
+  <link rel="stylesheet" href="/fuentes/plex-sans/700.css">
+  <link rel="stylesheet" href="/fuentes/plex-mono/400.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+<a class="saltar" href="#main">Saltar al contenido</a>
+<%- include('iconos') %>
+<div class="app">
+  <aside class="lateral">
+    <a class="marca" href="/"><span class="marca__nombre">Domicilios</span><span class="marca__caso">caso 7</span></a>
+    <nav class="nav" aria-label="Principal">
+      <% navegacion.forEach((g) => { %>
+        <span class="nav__grupo seccion"><%= g.grupo %></span>
+        <% g.items.forEach((item) => { %>
+          <% if (item.listo) { %>
+            <a class="nav__enlace" href="<%= item.ruta %>" <%- activo === item.ruta ? 'aria-current="page"' : '' %>>
+              <svg aria-hidden="true"><use href="#i-<%= item.icono %>"/></svg><%= item.texto %>
+            </a>
+          <% } else { %>
+            <span class="nav__enlace" aria-disabled="true" title="Módulo en construcción">
+              <svg aria-hidden="true"><use href="#i-<%= item.icono %>"/></svg><%= item.texto %><span class="nav__pronto">pronto</span>
+            </span>
+          <% } %>
+        <% }) %>
+      <% }) %>
+    </nav>
+  </aside>
+  <main class="principal" id="main" tabindex="-1">
+    <div class="contenido">

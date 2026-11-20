@@ -1,0 +1,86 @@
+/* =========================================================
+   tokens.css · Variables del sistema visual "Comanda"
+   Todo color, tamaño y tiempo de la app sale de aquí.
+   Los componentes (base.css) nunca usan valores sueltos.
+   ========================================================= */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Neutros: papel cálido (hue 75) con croma mínimo ---- */
+  --paper:       oklch(0.975 0.006 75);   /* fondo de página */
+  --surface:     oklch(0.993 0.003 75);   /* tarjetas, tablas, formularios */
+  --sunken:      oklch(0.945 0.008 75);   /* encabezados de tabla, inputs */
+  --line:        oklch(0.885 0.010 75);   /* bordes suaves */
+  --line-strong: oklch(0.780 0.012 75);   /* bordes de inputs, divisores fuertes */
+
+  --ink:   oklch(0.235 0.012 60);   /* texto principal (~14:1 sobre paper) */
+  --ink-2: oklch(0.420 0.012 60);   /* secundario (~7:1) */
+  --ink-3: oklch(0.520 0.012 60);   /* terciario, ayudas (~4.8:1) */
+
+  /* ---- Acento: mora. Acción principal y foco ---- */
+  --accent:       oklch(0.470 0.150 345);
+  --accent-hover: oklch(0.410 0.150 345);
+  --accent-soft:  oklch(0.950 0.025 345);
+  --on-accent:    oklch(0.985 0.005 345);
+
+  /* ---- Estados del pedido: tono de punto + fondo + texto ---- */
+  --st-recibido:        oklch(0.550 0.030 250);
+  --st-recibido-bg:     oklch(0.950 0.008 250);
+  --st-recibido-ink:    oklch(0.380 0.030 250);
+
+  --st-preparacion:     oklch(0.720 0.150 75);
+  --st-preparacion-bg:  oklch(0.955 0.045 85);
+  --st-preparacion-ink: oklch(0.430 0.090 65);
+
+  --st-camino:          oklch(0.560 0.140 245);
+  --st-camino-bg:       oklch(0.950 0.025 245);
+  --st-camino-ink:      oklch(0.400 0.120 250);
+
+  --st-entregado:       oklch(0.580 0.130 150);
+  --st-entregado-bg:    oklch(0.955 0.035 150);
+  --st-entregado-ink:   oklch(0.390 0.090 150);
+
+  --st-cancelado:       oklch(0.560 0.170 25);
+  --st-cancelado-bg:    oklch(0.955 0.025 25);
+  --st-cancelado-ink:   oklch(0.440 0.150 25);
+
+  /* ---- Retroalimentación ---- */
+  --danger:     var(--st-cancelado-ink);
+  --danger-bg:  var(--st-cancelado-bg);
+  --danger-btn: oklch(0.520 0.180 25);
+  --ok:         var(--st-entregado-ink);
+  --ok-bg:      var(--st-entregado-bg);
+
+  /* ---- Tipografía (fuentes servidas desde node_modules, sin internet) ---- */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* Escala 1.25 */
+  --t-xs:  0.8125rem;  /* 13 */
+  --t-sm:  0.875rem;   /* 14 */
+  --t-md:  1rem;       /* 16 */
+  --t-lg:  1.25rem;    /* 20 */
+  --t-xl:  1.5625rem;  /* 25 */
+  --t-2xl: 1.9375rem;  /* 31 */
+
+  /* ---- Espaciado (base 4 px) ---- */
+  --s-1: 0.25rem;  --s-2: 0.5rem;  --s-3: 0.75rem; --s-4: 1rem;
+  --s-5: 1.5rem;   --s-6: 2rem;    --s-7: 3rem;    --s-8: 4rem;
+
+  /* ---- Forma ---- */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --shadow-1: 0 1px 0 oklch(0.235 0.012 60 / 0.04);
+  --ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent);
+
+  /* ---- Movimiento ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* ease-out-quint */
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+
+  /* ---- Layout ---- */
+  --sidebar-w: 16.5rem;
+  --content-max: 72rem;
+  --control-h: 2.5rem;  /* 40 px: altura mínima de botones e inputs */
+}

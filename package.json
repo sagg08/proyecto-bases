@@ -1,0 +1,25 @@
+{
+  "name": "domicilios-caso7",
+  "version": "1.0.0",
+  "description": "Proyecto final Bases de Datos · Caso 7 Servicio de domicilios · Ingeniería Informática",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node app/server.js",
+    "dev": "node --watch app/server.js",
+    "db:setup": "node scripts/db-setup.js"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "dotenv": "^18.0.10",
+    "ejs": "^7.0.2",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "mysql2": "^3.24.6",
+    "zod": "^4.6.7"
+  }
+}

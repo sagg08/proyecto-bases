@@ -1,0 +1,58 @@
+<%- include('../partials/cabeza') %>
+<%
+  // Ayudante: clase y atributos de error para un campo
+  const err = (campo) => errores[campo];
+  const valor = (campo) => cliente[campo] ?? '';
+  const accion = modo === 'crear' ? '/clientes' : `/clientes/${cliente.id_cliente}/editar`;
+  const volver = modo === 'crear' ? '/clientes' : `/clientes/${cliente.id_cliente}`;
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/clientes">Clientes</a> / <%= modo === 'crear' ? 'Nuevo' : fmt.id(cliente.id_cliente) %></nav>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los campos marcados', mensaje: 'Hay ' + Object.keys(errores).length + ' dato(s) por corregir antes de guardar.' }) %><div class="espacio"></div>
+<% } %>
+
+<form class="formulario" action="<%= accion %>" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Nombre</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'nombres', etiqueta: 'Nombres', req: true, valor: valor('nombres'), error: err('nombres'), attrs: 'autocomplete="given-name" maxlength="60"' }) %>
+      <%- include('../partials/campo', { id: 'primer_apellido', etiqueta: 'Primer apellido', req: true, valor: valor('primer_apellido'), error: err('primer_apellido'), attrs: 'autocomplete="family-name" maxlength="40"' }) %>
+      <%- include('../partials/campo', { id: 'segundo_apellido', etiqueta: 'Segundo apellido', req: false, valor: valor('segundo_apellido'), error: err('segundo_apellido'), attrs: 'maxlength="40"', ayuda: 'Opcional.' }) %>
+    </div>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend class="seccion">Contacto</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'email', etiqueta: 'Correo', req: true, valor: valor('email'), error: err('email'), tipo: 'email', attrs: 'autocomplete="email" spellcheck="false" maxlength="100"' }) %>
+      <%- include('../partials/campo', { id: 'fecha_nacimiento', etiqueta: 'Fecha de nacimiento', req: true, valor: valor('fecha_nacimiento'), error: err('fecha_nacimiento'), tipo: 'date', attrs: 'autocomplete="bday"', ayuda: 'La edad se calcula a partir de esta fecha.' }) %>
+    </div>
+
+    <%# Atributo multivaluado: varios inputs con el mismo name="telefonos" %>
+    <div class="campo<%= err('telefonos') ? ' campo--error' : '' %>">
+      <span class="campo__etiqueta" id="tel-etiqueta">Teléfonos<span class="req" aria-hidden="true">*</span></span>
+      <div class="telefonos" data-telefonos role="group" aria-labelledby="tel-etiqueta">
+        <% cliente.telefonos.forEach((t, i) => { %>
+          <input class="entrada mono" name="telefonos" type="tel" value="<%= t %>" autocomplete="tel" inputmode="tel" maxlength="20"
+                 aria-label="Teléfono <%= i + 1 %>" <%- err('telefonos') ? 'aria-invalid="true" aria-describedby="telefonos-error"' : '' %>>
+        <% }) %>
+      </div>
+      <% if (err('telefonos')) { %><p class="campo__error" id="telefonos-error"><%= err('telefonos') %></p><% } %>
+      <p class="campo__ayuda">Uno o varios números de 7 a 15 dígitos. Deja vacío el que no uses.</p>
+      <button class="boton boton--fantasma boton--chico" type="button" data-agregar-telefono><svg aria-hidden="true"><use href="#i-mas"/></svg>Agregar otro teléfono</button>
+    </div>
+  </fieldset>
+
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit"><%= modo === 'crear' ? 'Crear cliente' : 'Guardar cambios' %></button>
+    <a class="boton boton--fantasma" href="<%= volver %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>
