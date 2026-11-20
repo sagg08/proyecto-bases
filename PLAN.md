@@ -5,13 +5,15 @@ Equipo: Samuel Gerena (P1) · Samuel Hernández (P2) · Juan Andrés Galarza (P3
 
 ## 0. Orden de trabajo (obligatorio)
 
+Meta: **todo terminado el domingo 22**. Cada uno hace su parte lo más pronto posible apenas le llegue el turno; las fechas de la tabla son el máximo, no el objetivo.
+
 | Turno | Quién | Empieza cuando | Debe dejar funcionando antes de avisar | Fecha límite |
 |---|---|---|---|---|
 | 1 | Samuel Gerena (P1) | Ya | BD base, app base, Clientes, 50 clientes de prueba, pruebas automatizadas base | ✅ Hecho |
-| 2 | Samuel Hernández (P2) | Ya | Restaurantes, categorías, productos y combos en la app; `03_seed.sql` con todos los datos; `sp_restaurante_listar` y `sp_producto_menu` | Sáb 21 · 8 p. m. |
-| 3 | Juan Andrés (P3) | P2 avisa | Repartidores; funciones; `sp_pedido_crear`, `sp_pedido_avanzar_estado`, `sp_calificar_pedido`; flujo Pedir y panel de Pedidos | Lun 23 · 8 p. m. |
-| 4 | Tomás (P4) | P3 avisa | Vistas, banco de consultas, Reportes, pruebas, `docs/arquitectura.md`, README final y revisión visual | Mié 25 · 8 p. m. |
-| — | Todos | P4 avisa | Ensayo de la sustentación: cada uno explica una parte que **no** hizo | Jue 26 |
+| 2 | Samuel Hernández (P2) | Ya | Restaurantes, categorías, productos y combos en la app; `03_seed.sql` con todos los datos; `sp_restaurante_listar` y `sp_producto_menu` | Sáb 21 · 12 m. |
+| 3 | Juan Andrés (P3) | P2 avisa | Repartidores; funciones; `sp_pedido_crear`, `sp_pedido_avanzar_estado`, `sp_calificar_pedido`; flujo Pedir y panel de Pedidos | Dom 22 · 12 m. |
+| 4 | Tomás (P4) | P3 avisa | Vistas, banco de consultas, Reportes, pruebas, `docs/arquitectura.md`, README final y revisión visual | Dom 22 · 8 p. m. |
+| — | Todos | P4 avisa | Ensayo de la sustentación: cada uno explica una parte que **no** hizo | Lun 23 – Jue 26 |
 
 **Al empezar tu turno**
 ```powershell
@@ -64,7 +66,8 @@ proyecto-bases/
 │   ├── 09_indices.sql          # índices + EXPLAIN antes/después
 │   └── perf/generar_5000.sql   # carga sintética para la prueba de rendimiento
 ├── app/
-│   ├── server.js
+│   ├── app.js                  # arma la app: middlewares, rutas, errores (aquí se montan los módulos)
+│   ├── server.js               # solo enciende el servidor (npm start)
 │   ├── db/pool.js · errores.js # callProc() + traducción de errores MySQL a mensajes claros
 │   ├── routes/                 # clientes, restaurantes, productos, repartidores, pedidos, reportes
 │   ├── validators/             # esquemas zod por entidad
@@ -84,16 +87,20 @@ proyecto-bases/
 
 **Se trabaja en serie: P1 → P2 → P3 → P4.** Cada uno usa lo que dejó el anterior (P3 necesita los restaurantes y productos de P2; P4 necesita los pedidos de P3 para consultas, reportes y pruebas). Nadie hace commit hasta que el anterior haya subido el suyo y avisado en el grupo. Mientras esperan, pueden leer el código y preparar su parte, pero sin subir nada.
 
-### P1 · Samuel Gerena: fundación (primero)
+### P1 · Samuel Gerena: fundación ✅ terminado
 Lo que todo lo demás necesita para existir.
 
 1. Estructura del repo, `.gitignore` (node_modules, .env), `.env.example`, `package.json`.
 2. `01_ddl.sql`: las 12 tablas del avance tal cual (CHECK ×3+, UNIQUE compuesta, DEFAULT, FKs con sus ON DELETE).
 3. `02_triggers.sql`: las reglas de la sección 5 del avance (productos del mismo restaurante, combos de un nivel, secuencia consecutiva, flujo de estados, repartidor obligatorio para "en camino", calificar solo entregados).
 4. Catálogo `ESTADO` (5 filas fijas) y `00_run_all.sql`.
-5. App base: `server.js`, `db/pool.js` con `callProc()` y traducción de `SQLSTATE 45000` a mensajes claros, layout EJS, navegación y el sistema visual.
+5. App base: `app.js` + `server.js`, `db/pool.js` con `callProc()`, `db/errores.js` (traduce errores de MySQL a mensajes claros, también con los nombres en minúscula de MySQL en Windows), layout EJS, navegación y el sistema visual.
 6. **Módulo de referencia completo: Clientes** (con teléfonos multivaluados): `sp_cliente_crear/listar/obtener/actualizar/eliminar`, validación zod, rutas y vistas. Es la plantilla que copian los demás.
-7. README inicial (cómo levantar MySQL, crear la BD, `npm start`).
+7. README inicial (cómo levantar MySQL, crear la BD, `npm start`, `npm test`).
+8. `03_seed_clientes.sql`: 50 clientes realistas con 70 teléfonos (`id_cliente` 1 a 50).
+9. Pruebas automatizadas: `npm test` crea la base aparte `domicilios_test` y corre 6 pruebas de Clientes (validación, creación, error de `SIGNAL`, 404 y **ROLLBACK**).
+
+**Lo que ya pueden reutilizar:** `callProc()` para llamar procedimientos, `ErrorApp` y el mapa `RESTRICCIONES` de `errores.js`, los validadores de `validators/comunes.js` (`textoObligatorio`, `nombrePersona`, `telefono`, `fecha`, `idSchema`, `validar`), los formatos de `lib/formato.js` (`fmt.cop`, `fmt.fecha`, `fmt.hora`, `fmt.id`, `fmt.nombre`), los parciales `campo` y `aviso`, y el patrón de pruebas de `tests/clientes.test.js`.
 
 ### P2 · Samuel Hernández: catálogo y datos
 1. Módulos Restaurantes, Categorías, Productos y Combos (SPs + validación + vistas, siguiendo el patrón de Clientes). Producto vendido no se borra: `disponible = FALSE`. Pautas visuales del **panel de operación** en la sección 4.
@@ -164,7 +171,7 @@ En `app/navegacion.js` se agrega un grupo arriba de todo: `{ grupo: 'Pedir', ite
 3. **Errores** · si tu tabla tiene UNIQUE o CHECK nuevos, agrega su nombre en `RESTRICCIONES` de `app/db/errores.js` (campo + mensaje).
 4. **Rutas** · `app/routes/<modulo>.js` copiando `clientes.js` (listar, nuevo, crear, detalle, editar, eliminar). Solo `callProc(...)`.
 5. **Vistas** · `app/views/<modulo>/` copiando las de clientes. Usa `partials/campo`, `partials/aviso` y las clases de `base.css` (`estado--*`, `riel`, `comanda` para pedidos).
-6. **Conectar** · en `app/server.js` agrega `app.use('/<ruta>', router)` y en `app/navegacion.js` cambia `listo: true`.
+6. **Conectar** · en `app/app.js` agrega `app.use('/<ruta>', router)` y en `app/navegacion.js` cambia `listo: true`.
 7. **Probar** · `npm run db:setup && npm start` y recorrer crear, editar, un error de validación, un error de la BD y eliminar. `npm test` debe seguir pasando.
 
 ## 6. Reglas del equipo
