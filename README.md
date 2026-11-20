@@ -45,6 +45,13 @@ npm start
 ```
 Abre **http://127.0.0.1:3000** en el navegador. Para detenerla: `Ctrl + C`.
 
+## Pruebas automatizadas
+
+```powershell
+npm test
+```
+Crea una base **aparte**, `domicilios_test`, la llena con los mismos scripts y corre las pruebas de `tests/` (validaciones, transacciones y el ROLLBACK). No toca la base `domicilios` que usa la app. Requiere que MySQL esté encendido y el `.env` configurado.
+
 ## Alternativa sin Node para la base de datos
 
 Desde la raíz del proyecto, con el cliente de consola de MySQL:
@@ -69,6 +76,7 @@ cmd /c "mysql -u root -p --default-character-set=utf8mb4 < db\00_run_all.sql"
 db/          scripts SQL en orden (00_run_all.sql es la lista maestra)
 scripts/     db-setup.js: ejecuta los SQL desde Node
 app/         servidor Express, rutas, validaciones y vistas EJS
+tests/       pruebas automatizadas (npm test)
 docs/        documentación y guía visual (style-guide.html)
 ```
 

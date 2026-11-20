@@ -27,9 +27,11 @@ export const clienteSchema = z.object({
     .refine((v) => edadEnAnios(v) >= 0, 'La fecha de nacimiento no puede ser futura.')
     .refine((v) => edadEnAnios(v) >= EDAD_MINIMA, `El cliente debe tener al menos ${EDAD_MINIMA} años.`)
     .refine((v) => edadEnAnios(v) <= 110, 'Revisa la fecha de nacimiento: la edad supera 110 años.'),
-  // Multivaluado: llega como uno o varios inputs "telefonos"; se quitan vacíos y repetidos
+  // Multivaluado: llega como uno o varios inputs "telefonos".
+  // Primero se limpian espacios y guiones y DESPUÉS se quitan vacíos y repetidos;
+  // si no, "310 222 3344" y "3102223344" pasarían como números distintos.
   telefonos: z.preprocess(
-    (v) => [...new Set(comoArreglo(v).map((t) => String(t).trim()).filter(Boolean))],
+    (v) => [...new Set(comoArreglo(v).map((t) => String(t).replace(/[\s-]/g, '')).filter(Boolean))],
     z.array(telefono).min(1, 'Agrega al menos un teléfono.').max(5, 'Máximo 5 teléfonos por cliente.'),
   ),
 });

@@ -11,7 +11,8 @@
 -- =====================================================================
 SOURCE db/01_ddl.sql;
 SOURCE db/02_triggers.sql;
--- SOURCE db/03_seed.sql;            -- P2: datos realistas
+SOURCE db/03_seed_clientes.sql;     -- P1: 50 clientes con teléfonos
+-- SOURCE db/03_seed.sql;            -- P2: restaurantes, productos, repartidores, pedidos...
 SOURCE db/04_funciones.sql;
 SOURCE db/05_sp_clientes.sql;
 -- SOURCE db/05_sp_catalogo.sql;     -- P2: restaurantes, categorías, productos, combos

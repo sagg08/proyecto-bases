@@ -7,7 +7,7 @@ Equipo: Samuel Gerena (P1) · Samuel Hernández (P2) · Juan Andrés Galarza (P3
 
 | Turno | Quién | Empieza cuando | Debe dejar funcionando antes de avisar | Fecha límite |
 |---|---|---|---|---|
-| 1 | Samuel Gerena (P1) | Ya | BD base, app base, Clientes | ✅ Hecho |
+| 1 | Samuel Gerena (P1) | Ya | BD base, app base, Clientes, 50 clientes de prueba, pruebas automatizadas base | ✅ Hecho |
 | 2 | Samuel Hernández (P2) | Ya | Restaurantes, categorías, productos y combos en la app; `03_seed.sql` con todos los datos; `sp_restaurante_listar` y `sp_producto_menu` | Sáb 21 · 8 p. m. |
 | 3 | Juan Andrés (P3) | P2 avisa | Repartidores; funciones; `sp_pedido_crear`, `sp_pedido_avanzar_estado`, `sp_calificar_pedido`; flujo Pedir y panel de Pedidos | Lun 23 · 8 p. m. |
 | 4 | Tomás (P4) | P3 avisa | Vistas, banco de consultas, Reportes, pruebas, `docs/arquitectura.md`, README final y revisión visual | Mié 25 · 8 p. m. |
@@ -22,7 +22,7 @@ npm start             # comprueba que lo anterior funciona ANTES de tocar nada
 ```
 
 **Antes de pasar el turno** (si algo falla, no se sube)
-1. `npm run db:setup` termina sin errores sobre la BD vacía.
+1. `npm run db:setup` termina sin errores sobre la BD vacía y `npm test` pasa.
 2. `npm start` y recorrer en el navegador lo tuyo **y** lo de los anteriores.
 3. En Source Control no aparecen `.env` ni `node_modules`.
 4. Un solo commit con mensaje claro → push → avisar en el grupo: "Listo P_, ya pueden hacer pull".
@@ -51,7 +51,8 @@ proyecto-bases/
 │   ├── 00_run_all.sql          # ejecuta todo en orden sobre BD vacía (se prueba en la sustentación)
 │   ├── 01_ddl.sql              # 12 tablas, PK/FK, CHECK, UNIQUE compuesta, DEFAULT
 │   ├── 02_triggers.sql         # reglas entre tablas con SIGNAL SQLSTATE '45000'
-│   ├── 03_seed.sql             # catálogo ESTADO + datos realistas (≥50 / ≥150 filas)
+│   ├── 03_seed_clientes.sql    # P1 · 50 clientes con teléfonos (id 1 a 50)
+│   ├── 03_seed.sql             # P2 · el resto de datos realistas (≥50 / ≥150 filas)
 │   ├── 04_funciones.sql        # fn_edad (P1) + fn_total_pedido, fn_estado_actual, fn_tiempo_entrega (P3)
 │   ├── 05_sp_clientes.sql      # P1 · un archivo de procedimientos por módulo
 │   ├── 05_sp_catalogo.sql      # P2
@@ -69,7 +70,7 @@ proyecto-bases/
 │   ├── validators/             # esquemas zod por entidad
 │   ├── views/                  # EJS: layout, parciales, una carpeta por módulo
 │   └── public/css/             # tokens.css + base.css (sistema visual, ya creado)
-├── tests/                      # ≥5 pruebas, incluida una que demuestra el ROLLBACK
+├── tests/                      # npm test · usa la base aparte domicilios_test
 ├── docs/
 │   ├── arquitectura.md         # conexión, seguridad, errores, diagrama de flujo
 │   ├── indices.md              # evidencia EXPLAIN y tiempos con/sin índice
@@ -100,7 +101,7 @@ Lo que todo lo demás necesita para existir.
    - `sp_restaurante_listar` debe devolver también las categorías que vende y su calificación promedio.
    - `sp_producto_menu(p_id_restaurante)`: productos agrupables por categoría, con `disponible` y, para los combos, sus componentes.
    - Componentes en `base.css`: tarjeta de restaurante (inicial + ícono, sin fotos) y fila de producto del menú con precio y botón **Agregar**.
-3. `03_seed.sql`: datos realistas de Villavicencio/Bogotá. Mínimos: tablas principales ≥50 filas (CLIENTE, RESTAURANTE, PRODUCTO, REPARTIDOR), transaccionales ≥150 (PEDIDO, DETALLE_PEDIDO, HISTORIAL_ESTADO, CALIFICACION). El historial debe respetar los triggers.
+3. `03_seed.sql`: datos realistas de Villavicencio/Bogotá. **CLIENTE y TELEFONO_CLIENTE ya están** en `03_seed_clientes.sql` (P1): 50 clientes con `id_cliente` 1 a 50 para usar en los pedidos. Mínimos que faltan: tablas principales ≥50 filas (RESTAURANTE, PRODUCTO, REPARTIDOR), transaccionales ≥150 (PEDIDO, DETALLE_PEDIDO, HISTORIAL_ESTADO, CALIFICACION). El historial debe respetar los triggers.
 4. `perf/generar_5000.sql` (procedimiento con bucle) + `09_indices.sql` + `docs/indices.md`: dos índices (sugeridos: `HISTORIAL_ESTADO(id_estado, fecha_hora)` y `PEDIDO(id_restaurante)` o `PEDIDO(id_cliente)`), EXPLAIN y tiempos con y sin índice.
 
 ### P3 · Juan Andrés Galarza: pedidos y transacciones (núcleo del negocio)
@@ -119,7 +120,7 @@ Lo que todo lo demás necesita para existir.
 1. `06_vistas.sql` y `07_consultas.sql`: 3 consultas por tema (WHERE/ORDER BY, UPDATE, DELETE, INNER JOIN, agregación, GROUP BY, HAVING, subconsulta en WHERE, subconsulta en FROM, vista, LEFT/RIGHT JOIN, self-join, UNION). Cada una con comentario: pregunta de negocio + por qué esa herramienta.
    - Self-join natural del caso: `COMBO_COMPONENTE` con PRODUCTO dos veces, o pedidos del mismo cliente comparados entre sí.
 2. Pantalla Reportes en la app (llama SPs que leen las vistas: ranking de restaurantes, repartidores mejor calificados, tiempo promedio de entrega). Cada reporte con la pregunta de negocio como título, tabla y barras horizontales en CSS (sección 4).
-3. `tests/`: mínimo 5 (validación zod rechaza datos malos; crear pedido válido; producto de otro restaurante → error claro; **fallo a mitad de `sp_pedido_crear` deja las tablas sin cambios**; transición de estado inválida).
+3. `tests/`: ya hay 6 pruebas de Clientes (P1), incluida una de ROLLBACK, con la base de prueba configurada (`npm test`). Agregar `tests/pedidos.test.js` copiando ese patrón: crear pedido válido; producto de otro restaurante → error claro; **fallo a mitad de `sp_pedido_crear` deja las tablas sin cambios**; transición de estado inválida.
 4. `docs/arquitectura.md` (diagrama de punta a punta, qué valida la app y qué la BD y por qué, seguridad: usuario MySQL con solo `EXECUTE`, `.env`, consultas parametrizadas) y README final probado en una máquina limpia.
 5. **Revisión final de la interfaz**: recorrer el flujo Pedir y cada módulo del panel a 1440 px y 390 px, y corregir lo que no siga las reglas de la sección 4. Ensayar con el grupo la demo de sustentación (pedir como cliente → avanzar estados en el panel → provocar un error de trigger).
 
@@ -164,7 +165,7 @@ En `app/navegacion.js` se agrega un grupo arriba de todo: `{ grupo: 'Pedir', ite
 4. **Rutas** · `app/routes/<modulo>.js` copiando `clientes.js` (listar, nuevo, crear, detalle, editar, eliminar). Solo `callProc(...)`.
 5. **Vistas** · `app/views/<modulo>/` copiando las de clientes. Usa `partials/campo`, `partials/aviso` y las clases de `base.css` (`estado--*`, `riel`, `comanda` para pedidos).
 6. **Conectar** · en `app/server.js` agrega `app.use('/<ruta>', router)` y en `app/navegacion.js` cambia `listo: true`.
-7. **Probar** · `npm run db:setup && npm start` y recorrer crear, editar, un error de validación, un error de la BD y eliminar.
+7. **Probar** · `npm run db:setup && npm start` y recorrer crear, editar, un error de validación, un error de la BD y eliminar. `npm test` debe seguir pasando.
 
 ## 6. Reglas del equipo
 

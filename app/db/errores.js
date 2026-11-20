@@ -34,9 +34,18 @@ const RESTRICCIONES = {
   ck_producto_precio:      { campo: 'precio', mensaje: 'El precio debe ser mayor que 0.' },
 };
 
-/** Busca el nombre de la restricción dentro del mensaje de MySQL. */
+/**
+ * Busca el nombre de la restricción dentro del mensaje de MySQL.
+ * Se compara en minúscula porque MySQL en Windows guarda los nombres de tabla
+ * en minúscula (lower_case_table_names=1): 'telefono_cliente.PRIMARY' en Windows
+ * vs 'TELEFONO_CLIENTE.PRIMARY' en Linux.
+ */
 function buscarRestriccion(mensaje = '') {
-  const clave = Object.keys(RESTRICCIONES).find((nombre) => mensaje.includes(`'${nombre}'`) || mensaje.includes(`.${nombre}'`));
+  const texto = mensaje.toLowerCase();
+  const clave = Object.keys(RESTRICCIONES).find((nombre) => {
+    const n = nombre.toLowerCase();
+    return texto.includes(`'${n}'`) || texto.includes(`.${n}'`);
+  });
   return clave ? { clave, ...RESTRICCIONES[clave] } : null;
 }
 

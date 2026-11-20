@@ -1,7 +1,8 @@
 /**
  * scripts/db-setup.js · Crea la base de datos desde cero.
  *
- * Uso:  npm run db:setup
+ * Uso:  npm run db:setup          (crea la base DB_NAME de .env, por defecto "domicilios")
+ * Las pruebas lo importan para crear "domicilios_test" sin tocar la base real.
  *
  * Qué hace:
  *  1. Lee db/00_run_all.sql y toma las líneas "SOURCE archivo;" (las comentadas se ignoran).
@@ -14,7 +15,7 @@
 import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import mysql from 'mysql2/promise';
 
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -25,8 +26,9 @@ function leerManifiesto() {
   return texto
     .split(/\r?\n/)
     .map((l) => l.trim())
-    .filter((l) => /^SOURCE\s+/i.test(l))           // ignora comentarios "-- SOURCE ..."
-    .map((l) => l.replace(/^SOURCE\s+/i, '').replace(/;$/, '').trim());
+    .map((l) => l.match(/^SOURCE\s+([^;\s]+)/i))     // toma solo la ruta; ignora "-- SOURCE ..." y comentarios al final
+    .filter(Boolean)
+    .map((m) => m[1]);
 }
 
 /**
@@ -62,48 +64,77 @@ function partirInstrucciones(sql) {
   return instrucciones.filter(Boolean);
 }
 
-async function main() {
+/**
+ * Los scripts SQL dicen "domicilios". Si se pide otra base (p. ej. domicilios_test),
+ * se cambia el nombre SOLO en DROP DATABASE / CREATE DATABASE / USE.
+ */
+function cambiarNombreBase(instruccion, nombreBD) {
+  if (nombreBD === 'domicilios') return instruccion;
+  return /^(DROP DATABASE|CREATE DATABASE|USE)\b/i.test(instruccion)
+    ? instruccion.replace(/\bdomicilios\b/, nombreBD)
+    : instruccion;
+}
+
+/**
+ * Crea la base completa. Lanza un error (no cierra el proceso) para que las pruebas lo atrapen.
+ * @param {{ nombreBD?: string, silencioso?: boolean }} opciones
+ */
+export async function crearBase({ nombreBD = process.env.DB_NAME ?? 'domicilios', silencioso = false } = {}) {
+  const log = silencioso ? () => {} : (t) => process.stdout.write(t);
+
   // Sin "database": 01_ddl.sql la borra y la vuelve a crear
   const conexion = await mysql.createConnection({
     host: process.env.DB_HOST ?? '127.0.0.1',
     port: Number(process.env.DB_PORT ?? 3306),
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    charset: 'utf8mb4',
   });
 
-  const archivos = leerManifiesto();
-  console.log(`Ejecutando ${archivos.length} archivo(s) sobre ${process.env.DB_HOST ?? '127.0.0.1'}...\n`);
+  try {
+    const archivos = leerManifiesto();
+    log(`Creando la base "${nombreBD}" con ${archivos.length} archivo(s)...\n\n`);
 
-  for (const archivo of archivos) {
-    const sql = fs.readFileSync(path.join(raiz, archivo), 'utf8');
-    const instrucciones = partirInstrucciones(sql);
-    process.stdout.write(`  ${archivo.padEnd(32)} `);
+    for (const archivo of archivos) {
+      const instrucciones = partirInstrucciones(fs.readFileSync(path.join(raiz, archivo), 'utf8'));
+      log(`  ${archivo.padEnd(32)} `);
 
-    for (const [i, instruccion] of instrucciones.entries()) {
-      try {
-        await conexion.query(instruccion);
-      } catch (err) {
-        console.log('ERROR');
-        console.error(`\nFalló la instrucción ${i + 1} de ${archivo}:\n${instruccion.slice(0, 300)}\n`);
-        console.error(`MySQL ${err.errno ?? ''} ${err.code ?? ''}: ${err.message}`);
-        await conexion.end();
-        process.exit(1);
+      for (const [i, instruccion] of instrucciones.entries()) {
+        try {
+          await conexion.query(cambiarNombreBase(instruccion, nombreBD));
+        } catch (err) {
+          log('ERROR\n');
+          err.message = `Falló la instrucción ${i + 1} de ${archivo}:\n${instruccion.slice(0, 300)}\n\nMySQL ${err.errno ?? ''} ${err.code ?? ''}: ${err.message}`;
+          throw err;
+        }
       }
+      log(`ok (${instrucciones.length} instrucciones)\n`);
     }
-    console.log(`ok (${instrucciones.length} instrucciones)`);
+  } finally {
+    await conexion.end();
   }
-
-  await conexion.end();
-  console.log('\nBase de datos lista. Ahora: npm start');
 }
 
-main().catch((err) => {
+// Solo se ejecuta si se llama directo (npm run db:setup), no cuando las pruebas lo importan
+const ejecutadoDirecto = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (ejecutadoDirecto) main();
+
+async function main() {
+  try {
+    await crearBase();
+    console.log('\nBase de datos lista. Ahora: npm start');
+  } catch (err) {
+    falla(err);
+  }
+}
+
+function falla(err) {
   if (err.code === 'ECONNREFUSED') {
     console.error('No hay conexión con MySQL. ¿Está encendido el servicio? Revisa DB_HOST y DB_PORT en .env');
   } else if (err.code === 'ER_ACCESS_DENIED_ERROR') {
     console.error('MySQL rechazó el usuario o la contraseña. Revisa DB_USER y DB_PASSWORD en .env');
   } else {
-    console.error(err);
+    console.error(`\n${err.message}`);
   }
   process.exit(1);
-});
+}
