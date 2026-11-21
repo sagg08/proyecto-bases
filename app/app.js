@@ -18,6 +18,8 @@ import { ErrorApp } from './db/errores.js';
 import { fmt } from './lib/formato.js';
 import { navegacion } from './navegacion.js';
 import clientesRouter from './routes/clientes.js';
+import restaurantesRouter from './routes/restaurantes.js';
+import categoriasRouter from './routes/categorias.js';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raiz = path.resolve(aqui, '..');
@@ -48,7 +50,9 @@ app.use((req, res, next) => {
 // ---------- 4. Rutas ----------
 app.get('/', (req, res) => res.render('inicio', { titulo: 'Inicio', activo: '/' }));
 app.use('/clientes', clientesRouter);
-// P2: app.use('/restaurantes', ...); app.use('/productos', ...);
+app.use('/restaurantes', restaurantesRouter);
+app.use('/categorias', categoriasRouter);
+// P2: app.use('/productos', ...);
 // P3: app.use('/repartidores', ...); app.use('/pedidos', ...);
 // P4: app.use('/reportes', ...);
 

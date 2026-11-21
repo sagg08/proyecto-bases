@@ -27,6 +27,7 @@ const RESTRICCIONES = {
   uq_cliente_email:        { campo: 'email', mensaje: 'Ya existe un cliente con ese correo.' },
   'TELEFONO_CLIENTE.PRIMARY': { campo: 'telefonos', mensaje: 'Hay un teléfono repetido.' },
   uq_restaurante_nit:      { campo: 'nit', mensaje: 'Ya existe un restaurante con ese NIT.' },
+  uq_categoria_nombre:     { campo: 'nombre', mensaje: 'Ya existe una categoría con ese nombre.' },
   uq_repartidor_documento: { campo: 'documento', mensaje: 'Ya existe un repartidor con esa cédula.' },
   uq_repartidor_placa:     { campo: 'placa', mensaje: 'Esa placa ya pertenece a otro repartidor.' },
   ck_repartidor_placa:     { campo: 'placa', mensaje: 'La bicicleta no lleva placa; la moto y el carro sí.' },

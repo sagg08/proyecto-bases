@@ -1,0 +1,57 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Restaurantes</h1>
+    <p class="texto"><%= restaurantes.length %> <%= restaurantes.length === 1 ? 'restaurante' : 'restaurantes' %><%= buscar ? ` que coinciden con "${buscar}"` : ' registrados' %></p>
+  </div>
+  <a class="boton boton--primario" href="/restaurantes/nuevo"><svg aria-hidden="true"><use href="#i-mas"/></svg>Nuevo restaurante</a>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+
+<form class="filtros" role="search" action="/restaurantes" method="get">
+  <div class="campo">
+    <label class="campo__etiqueta" for="q">Buscar</label>
+    <input class="entrada" id="q" name="q" type="search" value="<%= buscar %>" placeholder="Nombre o NIT…" autocomplete="off" spellcheck="false">
+  </div>
+  <button class="boton boton--secundario" type="submit"><svg aria-hidden="true"><use href="#i-buscar"/></svg>Buscar</button>
+  <% if (buscar) { %><a class="boton boton--fantasma" href="/restaurantes">Quitar filtro</a><% } %>
+</form>
+
+<% if (restaurantes.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo"><%= buscar ? 'Ningún restaurante coincide' : 'Aún no hay restaurantes' %></p>
+    <p class="texto"><%= buscar ? 'Prueba con otro nombre o NIT.' : 'Registra el primero para comenzar el catálogo.' %></p>
+    <a class="boton boton--secundario" href="/restaurantes/nuevo">Nuevo restaurante</a>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Restaurante</th>
+          <th scope="col">NIT</th>
+          <th scope="col" class="num">Productos</th>
+          <th scope="col">Categorías</th>
+          <th scope="col">Calificación</th>
+          <th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% restaurantes.forEach((r) => { %>
+          <tr>
+            <td class="id"><%= fmt.id(r.id_restaurante) %></td>
+            <td><a class="enlace-fila" href="/restaurantes/<%= r.id_restaurante %>"><%= r.nombre %></a></td>
+            <td class="mono"><%= r.nit %></td>
+            <td class="num"><%= r.num_productos %></td>
+            <td><%= r.categorias || '—' %></td>
+            <td><%= r.calificacion_promedio == null ? 'Sin calificaciones' : `★ ${Number(r.calificacion_promedio).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} (${r.num_calificaciones})` %></td>
+            <td class="acciones-celda"><a class="boton boton--fantasma" href="/restaurantes/<%= r.id_restaurante %>/editar" aria-label="Editar <%= r.nombre %>">Editar</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

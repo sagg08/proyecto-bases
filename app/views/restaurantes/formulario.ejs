@@ -1,0 +1,39 @@
+<%- include('../partials/cabeza') %>
+<%
+  const err = (campo) => errores[campo];
+  const valor = (campo) => restaurante[campo] ?? '';
+  const accion = modo === 'crear' ? '/restaurantes' : `/restaurantes/${restaurante.id_restaurante}/editar`;
+  const volver = modo === 'crear' ? '/restaurantes' : `/restaurantes/${restaurante.id_restaurante}`;
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/restaurantes">Restaurantes</a> / <%= modo === 'crear' ? 'Nuevo' : fmt.id(restaurante.id_restaurante) %></nav>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los campos marcados', mensaje: 'Hay ' + Object.keys(errores).length + ' dato(s) por corregir antes de guardar.' }) %><div class="espacio"></div>
+<% } %>
+
+<form class="formulario" action="<%= accion %>" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Datos del restaurante</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'nit', etiqueta: 'NIT', req: true, valor: valor('nit'), error: err('nit'), attrs: 'maxlength="15" inputmode="numeric"', ayuda: '9 o 10 dígitos; puedes incluir guion y dígito de verificación.' }) %>
+      <%- include('../partials/campo', { id: 'nombre', etiqueta: 'Nombre', req: true, valor: valor('nombre'), error: err('nombre'), attrs: 'maxlength="80" autocomplete="organization"' }) %>
+      <%- include('../partials/campo', { id: 'telefono', etiqueta: 'Teléfono', req: true, valor: valor('telefono'), error: err('telefono'), tipo: 'tel', attrs: 'maxlength="15" autocomplete="tel" inputmode="tel"' }) %>
+    </div>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'direccion', etiqueta: 'Dirección', req: true, valor: valor('direccion'), error: err('direccion'), attrs: 'maxlength="120" autocomplete="street-address"' }) %>
+      <%- include('../partials/campo', { id: 'fecha_afiliacion', etiqueta: 'Fecha de afiliación', req: true, valor: valor('fecha_afiliacion'), error: err('fecha_afiliacion'), tipo: 'date', ayuda: 'No puede ser una fecha futura.' }) %>
+    </div>
+  </fieldset>
+
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit"><%= modo === 'crear' ? 'Crear restaurante' : 'Guardar cambios' %></button>
+    <a class="boton boton--fantasma" href="<%= volver %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

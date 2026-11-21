@@ -1,0 +1,30 @@
+<%- include('../partials/cabeza') %>
+<%
+  const errorNombre = errores.nombre;
+  const nombre = categoria.nombre ?? '';
+  const accion = modo === 'crear' ? '/categorias' : `/categorias/${categoria.id_categoria}/editar`;
+  const volver = modo === 'crear' ? '/categorias' : `/categorias/${categoria.id_categoria}`;
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/categorias">Categorías</a> / <%= modo === 'crear' ? 'Nueva' : fmt.id(categoria.id_categoria) %></nav>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los campos marcados', mensaje: 'Hay ' + Object.keys(errores).length + ' dato(s) por corregir antes de guardar.' }) %><div class="espacio"></div>
+<% } %>
+
+<form class="formulario" action="<%= accion %>" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Datos de la categoría</legend>
+    <%- include('../partials/campo', { id: 'nombre', etiqueta: 'Nombre', req: true, valor: nombre, error: errorNombre, attrs: 'maxlength="40"' }) %>
+  </fieldset>
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit"><%= modo === 'crear' ? 'Crear categoría' : 'Guardar cambios' %></button>
+    <a class="boton boton--fantasma" href="<%= volver %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

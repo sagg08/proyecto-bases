@@ -1,0 +1,47 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/restaurantes">Restaurantes</a> / <span class="mono"><%= fmt.id(restaurante.id_restaurante) %></span></nav>
+    <h1 class="titulo"><%= restaurante.nombre %></h1>
+    <p class="texto mono"><%= restaurante.nit %></p>
+  </div>
+  <div class="acciones">
+    <a class="boton boton--secundario" href="/restaurantes/<%= restaurante.id_restaurante %>/editar"><svg aria-hidden="true"><use href="#i-lapiz"/></svg>Editar</a>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+
+<section class="bloque" aria-labelledby="datos-titulo">
+  <h2 class="seccion" id="datos-titulo">Datos</h2>
+  <dl class="datos">
+    <dt>NIT</dt><dd class="mono"><%= restaurante.nit %></dd>
+    <dt>Dirección</dt><dd><%= restaurante.direccion %></dd>
+    <dt>Teléfono</dt><dd class="mono"><%= restaurante.telefono %></dd>
+    <dt>Afiliado desde</dt><dd class="mono"><%= fmt.fecha(restaurante.fecha_afiliacion) %></dd>
+    <dt>Productos</dt><dd class="mono"><%= restaurante.num_productos %></dd>
+    <dt>Categorías</dt><dd><%= restaurante.categorias || 'Sin categorías' %></dd>
+    <dt>Categoría principal</dt><dd><%= restaurante.categoria_principal || 'Sin productos' %></dd>
+    <dt>Calificación</dt><dd><%= restaurante.calificacion_promedio == null ? 'Sin calificaciones' : `★ ${Number(restaurante.calificacion_promedio).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} (${restaurante.num_calificaciones})` %></dd>
+  </dl>
+</section>
+
+<section class="bloque" aria-labelledby="menu-titulo">
+  <h2 class="seccion" id="menu-titulo">Menú</h2>
+  <p class="texto">El menú de productos y combos se mostrará aquí en la siguiente fase.</p>
+</section>
+
+<section class="bloque bloque--peligro" aria-labelledby="peligro-titulo">
+  <h2 class="seccion" id="peligro-titulo">Eliminar</h2>
+  <details class="confirmar">
+    <summary class="boton boton--secundario">Eliminar restaurante</summary>
+    <form class="confirmar__panel" action="/restaurantes/<%= restaurante.id_restaurante %>/eliminar" method="post">
+      <span><%= restaurante.num_productos > 0 || restaurante.num_pedidos > 0
+        ? 'Tiene productos o pedidos registrados: la base de datos rechazará el borrado para conservar el catálogo y el historial.'
+        : 'Esta acción no se puede deshacer.' %></span>
+      <button class="boton boton--peligro" type="submit">Sí, eliminar</button>
+    </form>
+  </details>
+</section>
+<%- include('../partials/pie') %>

@@ -15,7 +15,7 @@ SOURCE db/03_seed_clientes.sql;     -- P1: 50 clientes con teléfonos
 -- SOURCE db/03_seed.sql;            -- P2: restaurantes, productos, repartidores, pedidos...
 SOURCE db/04_funciones.sql;
 SOURCE db/05_sp_clientes.sql;
--- SOURCE db/05_sp_catalogo.sql;     -- P2: restaurantes, categorías, productos, combos
+SOURCE db/05_sp_catalogo.sql;
 -- SOURCE db/05_sp_pedidos.sql;      -- P3: repartidores, pedidos, transacciones
 -- SOURCE db/06_vistas.sql;          -- P4
 -- SOURCE db/05_sp_reportes.sql;     -- P4 (va después de las vistas)

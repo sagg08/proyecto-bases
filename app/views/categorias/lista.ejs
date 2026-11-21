@@ -1,0 +1,42 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Categorías</h1>
+    <p class="texto"><%= categorias.length %> <%= categorias.length === 1 ? 'categoría' : 'categorías' %> registradas</p>
+  </div>
+  <a class="boton boton--primario" href="/categorias/nuevo"><svg aria-hidden="true"><use href="#i-mas"/></svg>Nueva categoría</a>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+
+<% if (categorias.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo">Aún no hay categorías</p>
+    <p class="texto">Registra categorías para organizar los productos del catálogo.</p>
+    <a class="boton boton--secundario" href="/categorias/nuevo">Nueva categoría</a>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Categoría</th>
+          <th scope="col" class="num">Productos</th>
+          <th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% categorias.forEach((c) => { %>
+          <tr>
+            <td class="id"><%= fmt.id(c.id_categoria) %></td>
+            <td><a class="enlace-fila" href="/categorias/<%= c.id_categoria %>"><%= c.nombre %></a></td>
+            <td class="num"><%= c.num_productos %></td>
+            <td class="acciones-celda"><a class="boton boton--fantasma" href="/categorias/<%= c.id_categoria %>/editar" aria-label="Editar <%= c.nombre %>">Editar</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>
