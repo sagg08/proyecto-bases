@@ -33,6 +33,9 @@ const RESTRICCIONES = {
   ck_repartidor_placa:     { campo: 'placa', mensaje: 'La bicicleta no lleva placa; la moto y el carro sí.' },
   uq_producto_restaurante_nombre: { campo: 'nombre', mensaje: 'Este restaurante ya tiene un producto con ese nombre.' },
   ck_producto_precio:      { campo: 'precio', mensaje: 'El precio debe ser mayor que 0.' },
+  ck_combo_cantidad:       { campo: 'componentes', mensaje: 'La cantidad de cada componente debe ser mayor que 0.' },
+  ck_combo_no_si_mismo:    { campo: 'componentes', mensaje: 'Un producto no puede ser componente de sí mismo.' },
+  'COMBO_COMPONENTE.PRIMARY': { campo: 'componentes', mensaje: 'Un producto no puede repetirse en el mismo combo.' },
 };
 
 /**

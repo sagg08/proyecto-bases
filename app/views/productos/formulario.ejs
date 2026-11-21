@@ -1,0 +1,65 @@
+<%- include('../partials/cabeza') %>
+<%
+  const err = (campo) => errores[campo];
+  const valor = (campo) => producto[campo] ?? '';
+  const accion = modo === 'crear' ? '/productos' : `/productos/${producto.id_producto}/editar`;
+  const volver = modo === 'crear' ? '/productos' : `/productos/${producto.id_producto}`;
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/productos">Productos y combos</a> / <%= modo === 'crear' ? 'Nuevo producto' : fmt.id(producto.id_producto) %></nav>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los campos marcados', mensaje: 'Hay ' + Object.keys(errores).length + ' dato(s) por corregir antes de guardar.' }) %><div class="espacio"></div>
+<% } %>
+
+<form class="formulario" action="<%= accion %>" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Datos del producto</legend>
+    <div class="fila">
+      <% if (restauranteFijo) { %>
+        <input type="hidden" name="id_restaurante" value="<%= producto.id_restaurante %>">
+        <div class="campo<%= err('id_restaurante') ? ' campo--error' : '' %>">
+          <span class="campo__etiqueta">Restaurante</span>
+          <p class="campo__ayuda">No se puede cambiar porque este producto participa en un combo.</p>
+          <% if (err('id_restaurante')) { %><p class="campo__error"><%= err('id_restaurante') %></p><% } %>
+        </div>
+      <% } else { %>
+        <div class="campo<%= err('id_restaurante') ? ' campo--error' : '' %>">
+          <label class="campo__etiqueta" for="id_restaurante">Restaurante<span class="req" aria-hidden="true">*</span></label>
+          <select class="selector" id="id_restaurante" name="id_restaurante" required <%- err('id_restaurante') ? 'aria-invalid="true" aria-describedby="id_restaurante-error"' : '' %>>
+            <option value="">Selecciona un restaurante</option>
+            <% restaurantes.forEach((r) => { %><option value="<%= r.id_restaurante %>" <%- String(valor('id_restaurante')) === String(r.id_restaurante) ? 'selected' : '' %>><%= r.nombre %></option><% }) %>
+          </select>
+          <% if (err('id_restaurante')) { %><p class="campo__error" id="id_restaurante-error"><%= err('id_restaurante') %></p><% } %>
+        </div>
+      <% } %>
+      <div class="campo<%= err('id_categoria') ? ' campo--error' : '' %>">
+        <label class="campo__etiqueta" for="id_categoria">Categoría<span class="req" aria-hidden="true">*</span></label>
+        <select class="selector" id="id_categoria" name="id_categoria" required <%- err('id_categoria') ? 'aria-invalid="true" aria-describedby="id_categoria-error"' : '' %>>
+          <option value="">Selecciona una categoría</option>
+          <% categorias.forEach((c) => { %><option value="<%= c.id_categoria %>" <%- String(valor('id_categoria')) === String(c.id_categoria) ? 'selected' : '' %>><%= c.nombre %></option><% }) %>
+        </select>
+        <% if (err('id_categoria')) { %><p class="campo__error" id="id_categoria-error"><%= err('id_categoria') %></p><% } %>
+      </div>
+    </div>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'nombre', etiqueta: 'Nombre', req: true, valor: valor('nombre'), error: err('nombre'), attrs: 'maxlength="80"' }) %>
+      <%- include('../partials/campo', { id: 'precio', etiqueta: 'Precio (COP)', req: true, valor: valor('precio'), error: err('precio'), tipo: 'number', attrs: 'min="1" step="1" inputmode="numeric"' }) %>
+    </div>
+    <div class="campo<%= err('descripcion') ? ' campo--error' : '' %>">
+      <label class="campo__etiqueta" for="descripcion">Descripción</label>
+      <textarea class="area" id="descripcion" name="descripcion" maxlength="200" <%- err('descripcion') ? 'aria-invalid="true" aria-describedby="descripcion-error"' : '' %>><%= valor('descripcion') %></textarea>
+      <% if (err('descripcion')) { %><p class="campo__error" id="descripcion-error"><%= err('descripcion') %></p><% } else { %><p class="campo__ayuda">Opcional, máximo 200 caracteres.</p><% } %>
+    </div>
+  </fieldset>
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit"><%= modo === 'crear' ? 'Crear producto' : 'Guardar cambios' %></button>
+    <a class="boton boton--fantasma" href="<%= volver %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

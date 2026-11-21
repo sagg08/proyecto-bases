@@ -1,0 +1,86 @@
+<%- include('../partials/cabeza') %>
+<%
+  const err = (campo) => errores[campo];
+  const valor = (campo) => producto[campo] ?? '';
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/productos">Productos y combos</a> / Nuevo combo</nav>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los datos', mensaje: 'Hay datos por corregir antes de guardar.' }) %><div class="espacio"></div>
+<% } %>
+
+<% if (!restaurante) { %>
+  <form class="formulario" action="/productos/combo/nuevo" method="get">
+    <fieldset class="grupo">
+      <legend class="seccion">Paso 1 · Selecciona un restaurante</legend>
+      <div class="campo<%= err('restaurante') ? ' campo--error' : '' %>">
+        <label class="campo__etiqueta" for="restaurante">Restaurante<span class="req" aria-hidden="true">*</span></label>
+        <select class="selector" id="restaurante" name="restaurante" required>
+          <option value="">Selecciona un restaurante</option>
+          <% restaurantes.forEach((r) => { %><option value="<%= r.id_restaurante %>"><%= r.nombre %></option><% }) %>
+        </select>
+        <% if (err('restaurante')) { %><p class="campo__error"><%= err('restaurante') %></p><% } %>
+      </div>
+    </fieldset>
+    <button class="boton boton--primario" type="submit">Continuar</button>
+  </form>
+<% } else { %>
+  <form class="formulario" action="/productos/combo/nuevo" method="post" novalidate data-formulario>
+    <input type="hidden" name="id_restaurante" value="<%= restaurante.id_restaurante %>">
+    <fieldset class="grupo">
+      <legend class="seccion">Datos del combo · <%= restaurante.nombre %></legend>
+      <div class="fila">
+        <div class="campo<%= err('id_categoria') ? ' campo--error' : '' %>">
+          <label class="campo__etiqueta" for="id_categoria">Categoría<span class="req" aria-hidden="true">*</span></label>
+          <select class="selector" id="id_categoria" name="id_categoria" required>
+            <option value="">Selecciona una categoría</option>
+            <% categorias.forEach((c) => { %><option value="<%= c.id_categoria %>" <%- String(valor('id_categoria')) === String(c.id_categoria) ? 'selected' : '' %>><%= c.nombre %></option><% }) %>
+          </select>
+          <% if (err('id_categoria')) { %><p class="campo__error"><%= err('id_categoria') %></p><% } %>
+        </div>
+        <%- include('../partials/campo', { id: 'nombre', etiqueta: 'Nombre del combo', req: true, valor: valor('nombre'), error: err('nombre'), attrs: 'maxlength="80"' }) %>
+        <%- include('../partials/campo', { id: 'precio', etiqueta: 'Precio (COP)', req: true, valor: valor('precio'), error: err('precio'), tipo: 'number', attrs: 'min="1" step="1" inputmode="numeric"' }) %>
+      </div>
+      <div class="campo<%= err('descripcion') ? ' campo--error' : '' %>">
+        <label class="campo__etiqueta" for="descripcion">Descripción</label>
+        <textarea class="area" id="descripcion" name="descripcion" maxlength="200"><%= valor('descripcion') %></textarea>
+        <% if (err('descripcion')) { %><p class="campo__error"><%= err('descripcion') %></p><% } else { %><p class="campo__ayuda">Opcional, máximo 200 caracteres.</p><% } %>
+      </div>
+    </fieldset>
+
+    <fieldset class="grupo">
+      <legend class="seccion">Paso 2 · Elige productos y cantidades</legend>
+      <% if (err('componentes')) { %><p class="campo__error"><%= err('componentes') %></p><% } %>
+      <% if (productos.length === 0) { %>
+        <p class="texto">Este restaurante aún no tiene productos simples disponibles para incluir.</p>
+      <% } else { %>
+        <div class="tabla-marco">
+          <table class="tabla">
+            <thead><tr><th scope="col">Incluir</th><th scope="col">Producto</th><th scope="col" class="num">Precio</th><th scope="col">Cantidad</th></tr></thead>
+            <tbody>
+              <% productos.forEach((p) => { %>
+                <tr>
+                  <td><input type="checkbox" name="componente" value="<%= p.id_producto %>" aria-label="Incluir <%= p.nombre %>" <%- seleccionados[p.id_producto] ? 'checked' : '' %>></td>
+                  <td><%= p.nombre %></td>
+                  <td class="num"><%= fmt.cop(p.precio) %></td>
+                  <td><input class="entrada" type="number" name="cantidad_<%= p.id_producto %>" min="1" step="1" value="<%= cantidades[p.id_producto] ?? '1' %>" aria-label="Cantidad de <%= p.nombre %>"></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </fieldset>
+    <div class="acciones">
+      <button class="boton boton--primario" type="submit">Crear combo</button>
+      <a class="boton boton--fantasma" href="/productos">Cancelar</a>
+    </div>
+  </form>
+<% } %>
+<%- include('../partials/pie') %>

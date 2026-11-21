@@ -28,6 +28,10 @@
   <symbol id="i-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
   <symbol id="i-mas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-avanzar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-hamburguesa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a8 5 0 0 1 16 0"/><path d="M3 11h18v3H3zM4 17h16M6 20h12"/></symbol>
+  <symbol id="i-pizza" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c6-3 12-2 16 1l-8 15z"/><path d="M6.5 9.5h.01M10 13.5h.01M14 9.5h.01"/><path d="M12 21c1.5-2 3-4.8 4.5-7.5"/></symbol>
+  <symbol id="i-bebida" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l-1 16H7zM6 8h12"/><path d="M14 4l2-3M10 12v4"/></symbol>
+  <symbol id="i-postre" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13h14l-2 8H7z"/><path d="M4 13c0-2 2-3 4-3 0-3 2-5 4-5s4 2 4 5c2 0 4 1 4 3"/><path d="M12 5V3M11 3h2"/></symbol>
 </svg>
 
 <div class="app">
@@ -188,6 +192,46 @@
           <dt>Tiempo de entrega</dt><dd class="mono">38 min</dd>
           <dt>Teléfonos</dt><dd class="mono">3104558821 · 3009127734</dd>
         </dl>
+      </section>
+
+      <section style="display:grid; gap: var(--s-5);">
+        <h2 class="subtitulo">Restaurante y menú · componentes reutilizados por P3</h2>
+        <div style="display:grid; max-width:var(--sidebar-w); grid-template-columns:repeat(auto-fit, minmax(min(100%, var(--sidebar-w)), 1fr)); gap:var(--s-4);">
+          <a class="tarjeta-restaurante tarjeta-restaurante--tono-2" href="#">
+            <span class="tarjeta-restaurante__marca">
+              <span class="tarjeta-restaurante__inicial">S</span>
+              <svg class="tarjeta-restaurante__icono" aria-hidden="true"><use href="#i-hamburguesa"/></svg>
+            </span>
+            <span class="tarjeta-restaurante__nombre">Sazón de la Casa</span>
+            <span class="tarjeta-restaurante__categorias">Hamburguesas · Papas · Bebidas</span>
+            <span class="tarjeta-restaurante__calificacion">★ 4,6</span>
+          </a>
+        </div>
+        <div class="bloque">
+          <h3 class="menu-categoria">Hamburguesas</h3>
+          <article class="fila-menu">
+            <div class="fila-menu__contenido">
+              <h4 class="fila-menu__nombre">Hamburguesa clásica</h4>
+              <p class="fila-menu__descripcion">Carne, queso, tomate y lechuga.</p>
+            </div>
+            <div class="fila-menu__acciones"><span class="fila-menu__precio mono">$ 18.500</span><button class="boton boton--secundario" type="button">Agregar</button></div>
+          </article>
+          <article class="fila-menu">
+            <div class="fila-menu__contenido">
+              <h4 class="fila-menu__nombre">Combo clásico <span class="etiqueta--combo">Combo</span></h4>
+              <p class="fila-menu__descripcion">Una opción completa para compartir.</p>
+              <p class="fila-menu__incluye">Incluye: 1× Hamburguesa clásica · 1× Papas</p>
+            </div>
+            <div class="fila-menu__acciones"><span class="fila-menu__precio mono">$ 25.000</span><button class="boton boton--secundario" type="button">Agregar</button></div>
+          </article>
+          <article class="fila-menu fila-menu--no-disponible">
+            <div class="fila-menu__contenido">
+              <h4 class="fila-menu__nombre">Hamburguesa doble</h4>
+              <p class="fila-menu__descripcion">Doble carne y queso.</p>
+            </div>
+            <div class="fila-menu__acciones"><span class="fila-menu__precio mono">$ 24.000</span><span class="fila-menu__estado">No disponible</span></div>
+          </article>
+        </div>
       </section>
     </div>
   </main>

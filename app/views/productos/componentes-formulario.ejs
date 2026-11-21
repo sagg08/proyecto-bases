@@ -1,0 +1,40 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/productos">Productos y combos</a> / <a href="/productos/<%= producto.id_producto %>"><%= producto.nombre %></a> / Componentes</nav>
+    <h1 class="titulo">Editar componentes del combo</h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (errores.componentes && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los componentes', mensaje: errores.componentes }) %><div class="espacio"></div>
+<% } %>
+
+<form class="formulario" action="/productos/<%= producto.id_producto %>/componentes/editar" method="post" novalidate>
+  <p class="texto">Restaurante: <strong><%= producto.restaurante %></strong>. El combo debe conservar al menos un producto simple.</p>
+  <% if (productos.length === 0) { %>
+    <div class="vacio"><p class="texto">No hay productos simples para seleccionar.</p></div>
+  <% } else { %>
+    <div class="tabla-marco">
+      <table class="tabla">
+        <thead><tr><th scope="col">Incluir</th><th scope="col">Producto</th><th scope="col" class="num">Precio</th><th scope="col">Cantidad</th></tr></thead>
+        <tbody>
+          <% productos.forEach((p) => { %>
+            <tr>
+              <td><input type="checkbox" name="id_producto" value="<%= p.id_producto %>" aria-label="Incluir <%= p.nombre %>" <%- seleccionados[p.id_producto] ? 'checked' : '' %>></td>
+              <td><%= p.nombre %></td>
+              <td class="num"><%= fmt.cop(p.precio) %></td>
+              <td><input class="entrada" type="number" name="cantidad_<%= p.id_producto %>" min="1" step="1" value="<%= cantidades[p.id_producto] ?? '1' %>" aria-label="Cantidad de <%= p.nombre %>"></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit">Guardar componentes</button>
+    <a class="boton boton--fantasma" href="/productos/<%= producto.id_producto %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

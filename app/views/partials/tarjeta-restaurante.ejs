@@ -1,0 +1,31 @@
+<%#
+  Tarjeta reutilizable de restaurante.
+  Ejemplo de include: include('../partials/tarjeta-restaurante', { restaurante: r, href: destino }).
+  Espera: restaurante (id_restaurante, nombre, categorias, categoria_principal,
+  calificacion_promedio) y href (destino al seleccionar la tarjeta).
+%>
+<%
+  const clavesIcono = {
+    hamburguesa: 'hamburguesa', hamburguesas: 'hamburguesa',
+    pizza: 'pizza', pizzas: 'pizza', pizzeria: 'pizza', pizzerias: 'pizza',
+    bebida: 'bebida', bebidas: 'bebida', jugo: 'bebida', jugos: 'bebida',
+    gaseosas: 'bebida', cafe: 'bebida', cafes: 'bebida',
+    postre: 'postre', postres: 'postre', dulces: 'postre', helados: 'postre',
+    comida: 'producto', comidas: 'producto', 'comida rapida': 'producto',
+    'comidas rapidas': 'producto', arepas: 'producto', asados: 'producto',
+  };
+  const categoriaClave = String(restaurante.categoria_principal ?? '')
+    .normalize('NFD').replace(/\p{Diacritic}/gu, '').trim().toLowerCase();
+  const icono = clavesIcono[categoriaClave] ?? 'tienda';
+  const tono = Math.abs(Number(restaurante.id_restaurante) || 0) % 5;
+  const inicial = Array.from(String(restaurante.nombre ?? 'R').trim())[0]?.toLocaleUpperCase('es-CO') ?? 'R';
+%>
+<a class="tarjeta-restaurante tarjeta-restaurante--tono-<%= tono %>" href="<%= href %>">
+  <span class="tarjeta-restaurante__marca">
+    <span class="tarjeta-restaurante__inicial"><%= inicial %></span>
+    <svg class="tarjeta-restaurante__icono" aria-hidden="true"><use href="#i-<%= icono %>"/></svg>
+  </span>
+  <span class="tarjeta-restaurante__nombre"><%= restaurante.nombre %></span>
+  <span class="tarjeta-restaurante__categorias"><%= restaurante.categorias || 'Sin categorías' %></span>
+  <span class="tarjeta-restaurante__calificacion"><%= restaurante.calificacion_promedio == null ? 'Nuevo' : `★ ${Number(restaurante.calificacion_promedio).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` %></span>
+</a>

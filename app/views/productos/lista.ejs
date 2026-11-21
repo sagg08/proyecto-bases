@@ -1,0 +1,77 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Productos y combos</h1>
+    <p class="texto"><%= productos.length %> <%= productos.length === 1 ? 'resultado' : 'resultados' %><%= buscar ? ` para "${buscar}"` : '' %></p>
+  </div>
+  <div class="acciones">
+    <a class="boton boton--secundario" href="/productos/combo/nuevo"><svg aria-hidden="true"><use href="#i-mas"/></svg>Nuevo combo</a>
+    <a class="boton boton--primario" href="/productos/nuevo"><svg aria-hidden="true"><use href="#i-mas"/></svg>Nuevo producto</a>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+<% if (aviso) { %><%- include('../partials/aviso', aviso) %><div class="espacio"></div><% } %>
+
+<form class="filtros" role="search" action="/productos" method="get">
+  <div class="campo">
+    <label class="campo__etiqueta" for="q">Buscar</label>
+    <input class="entrada" id="q" name="q" type="search" value="<%= buscar %>" placeholder="Nombre del producto…" autocomplete="off">
+  </div>
+  <div class="campo">
+    <label class="campo__etiqueta" for="restaurante">Restaurante</label>
+    <select class="selector" id="restaurante" name="restaurante">
+      <option value="">Todos</option>
+      <% restaurantes.forEach((r) => { %><option value="<%= r.id_restaurante %>" <%- String(filtroRestaurante) === String(r.id_restaurante) ? 'selected' : '' %>><%= r.nombre %></option><% }) %>
+    </select>
+  </div>
+  <div class="campo">
+    <label class="campo__etiqueta" for="categoria">Categoría</label>
+    <select class="selector" id="categoria" name="categoria">
+      <option value="">Todas</option>
+      <% categorias.forEach((c) => { %><option value="<%= c.id_categoria %>" <%- String(filtroCategoria) === String(c.id_categoria) ? 'selected' : '' %>><%= c.nombre %></option><% }) %>
+    </select>
+  </div>
+  <button class="boton boton--secundario" type="submit"><svg aria-hidden="true"><use href="#i-buscar"/></svg>Filtrar</button>
+  <% if (buscar || filtroRestaurante || filtroCategoria) { %><a class="boton boton--fantasma" href="/productos">Quitar filtros</a><% } %>
+</form>
+
+<% if (productos.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo">No hay productos para mostrar</p>
+    <p class="texto"><%= buscar || filtroRestaurante || filtroCategoria ? 'Cambia los filtros o registra un producto nuevo.' : 'Registra productos para completar el catálogo.' %></p>
+    <a class="boton boton--secundario" href="/productos/nuevo">Nuevo producto</a>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Producto</th>
+          <th scope="col">Restaurante</th>
+          <th scope="col">Categoría</th>
+          <th scope="col" class="num">Precio</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Disponibilidad</th>
+          <th scope="col" class="num">Ventas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% productos.forEach((p) => { %>
+          <tr class="<%= Boolean(p.disponible) ? '' : 'fila--no-disponible' %>">
+            <td class="id"><%= fmt.id(p.id_producto) %></td>
+            <td><a class="enlace-fila" href="/productos/<%= p.id_producto %>"><%= p.nombre %></a></td>
+            <td><%= p.restaurante %></td>
+            <td><%= p.categoria %></td>
+            <td class="num"><%= fmt.cop(p.precio) %></td>
+            <td><% if (Boolean(p.es_combo)) { %><span class="etiqueta--combo">Combo</span><% } else { %>Producto<% } %></td>
+            <td><%= Boolean(p.disponible) ? 'Disponible' : 'No disponible' %></td>
+            <td class="num"><%= p.veces_vendido %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

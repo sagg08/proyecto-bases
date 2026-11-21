@@ -1,0 +1,58 @@
+<%#
+  Menú reutilizable de un restaurante.
+  Ejemplo de include: include('../partials/menu', { productos, componentes, accionAgregar: null }).
+  Espera: productos (con id_categoria, categoria, es_combo y disponible), componentes
+  (id_combo, nombre_componente, cantidad) y accionAgregar (URL POST o null para modo panel).
+%>
+<%
+  const categoriasMenu = [];
+  const gruposPorCategoria = new Map();
+  const componentesPorCombo = new Map();
+  for (const componente of componentes) {
+    const idCombo = String(componente.id_combo);
+    if (!componentesPorCombo.has(idCombo)) componentesPorCombo.set(idCombo, []);
+    componentesPorCombo.get(idCombo).push(componente);
+  }
+  for (const producto of productos) {
+    const idCategoria = String(producto.id_categoria);
+    if (!gruposPorCategoria.has(idCategoria)) {
+      const grupo = { nombre: producto.categoria, productos: [] };
+      gruposPorCategoria.set(idCategoria, grupo);
+      categoriasMenu.push(grupo);
+    }
+    gruposPorCategoria.get(idCategoria).productos.push(producto);
+  }
+%>
+<% if (categoriasMenu.length === 0) { %>
+  <div class="vacio"><p class="texto">Este restaurante aún no tiene productos en el menú.</p></div>
+<% } else { %>
+  <% categoriasMenu.forEach((grupo) => { %>
+    <section aria-label="<%= grupo.nombre %>">
+      <h3 class="menu-categoria"><%= grupo.nombre %></h3>
+      <% grupo.productos.forEach((producto) => {
+        const partesCombo = (componentesPorCombo.get(String(producto.id_producto)) ?? [])
+          .map((c) => `${c.cantidad}× ${c.nombre_componente}`)
+          .join(' · ');
+      %>
+        <article class="fila-menu<%= producto.disponible ? '' : ' fila-menu--no-disponible' %>">
+          <div class="fila-menu__contenido">
+            <h4 class="fila-menu__nombre"><%= producto.nombre %><% if (producto.es_combo) { %> <span class="etiqueta--combo">Combo</span><% } %></h4>
+            <% if (producto.descripcion) { %><p class="fila-menu__descripcion"><%= producto.descripcion %></p><% } %>
+            <% if (producto.es_combo && partesCombo) { %><p class="fila-menu__incluye">Incluye: <%= partesCombo %></p><% } %>
+          </div>
+          <div class="fila-menu__acciones">
+            <span class="fila-menu__precio mono"><%= fmt.cop(producto.precio) %></span>
+            <% if (!producto.disponible) { %>
+              <span class="fila-menu__estado">No disponible</span>
+            <% } else if (accionAgregar) { %>
+              <form method="post" action="<%= accionAgregar %>">
+                <input type="hidden" name="id_producto" value="<%= producto.id_producto %>">
+                <button class="boton boton--secundario" type="submit">Agregar</button>
+              </form>
+            <% } %>
+          </div>
+        </article>
+      <% }) %>
+    </section>
+  <% }) %>
+<% } %>

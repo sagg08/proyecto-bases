@@ -12,7 +12,7 @@ export const navegacion = [
     { ruta: '/clientes',     texto: 'Clientes',           icono: 'cliente',  listo: true  },  // P1
     { ruta: '/restaurantes', texto: 'Restaurantes',       icono: 'tienda',   listo: true  },  // P2
     { ruta: '/categorias',   texto: 'Categorías',         icono: 'producto', listo: true  },  // P2
-    { ruta: '/productos',    texto: 'Productos y combos', icono: 'producto', listo: false },  // P2
+    { ruta: '/productos',    texto: 'Productos y combos', icono: 'producto', listo: true  },  // P2
   ]},
   { grupo: 'Análisis', items: [
     { ruta: '/reportes',     texto: 'Reportes',           icono: 'reporte',  listo: false },  // P4

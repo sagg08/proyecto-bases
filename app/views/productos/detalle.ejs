@@ -1,0 +1,79 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/productos">Productos y combos</a> / <span class="mono"><%= fmt.id(producto.id_producto) %></span></nav>
+    <h1 class="titulo"><%= producto.nombre %> <% if (Boolean(producto.es_combo)) { %><span class="etiqueta--combo">Combo</span><% } %></h1>
+    <p class="texto"><%= producto.restaurante %> · <%= producto.categoria %></p>
+  </div>
+  <div class="acciones">
+    <% if (Boolean(producto.es_combo)) { %>
+      <a class="boton boton--secundario" href="/productos/<%= producto.id_producto %>/componentes/editar">Editar componentes</a>
+    <% } else { %>
+      <a class="boton boton--secundario" href="/productos/<%= producto.id_producto %>/editar"><svg aria-hidden="true"><use href="#i-lapiz"/></svg>Editar</a>
+    <% } %>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: aviso.tipo, ...aviso }) %><div class="espacio"></div><% } %>
+
+<section class="bloque" aria-labelledby="datos-titulo">
+  <h2 class="seccion" id="datos-titulo">Datos</h2>
+  <dl class="datos">
+    <dt>Restaurante</dt><dd><%= producto.restaurante %></dd>
+    <dt>Categoría</dt><dd><%= producto.categoria %></dd>
+    <dt>Precio</dt><dd class="mono"><%= fmt.cop(producto.precio) %></dd>
+    <dt>Descripción</dt><dd><%= producto.descripcion || 'Sin descripción' %></dd>
+    <dt>Disponibilidad</dt><dd><%= Boolean(producto.disponible) ? 'Disponible' : 'No disponible' %></dd>
+    <dt>Ventas</dt><dd class="mono"><%= producto.veces_vendido %></dd>
+  </dl>
+  <form action="/productos/<%= producto.id_producto %>/disponibilidad" method="post">
+    <input type="hidden" name="disponible" value="<%= Boolean(producto.disponible) ? '0' : '1' %>">
+    <button class="boton boton--secundario" type="submit"><%= Boolean(producto.disponible) ? 'Marcar no disponible' : 'Marcar disponible' %></button>
+  </form>
+</section>
+
+<section class="bloque" aria-labelledby="componentes-titulo">
+  <h2 class="seccion" id="componentes-titulo"><%= Boolean(producto.es_combo) ? 'Componentes del combo' : 'Componentes' %></h2>
+  <% if (componentes.length === 0) { %>
+    <p class="texto"><%= Boolean(producto.es_combo) ? 'Este combo no tiene componentes.' : 'Este producto no es un combo.' %></p>
+  <% } else { %>
+    <div class="tabla-marco">
+      <table class="tabla">
+        <thead><tr><th scope="col">Producto</th><th scope="col" class="num">Precio unitario</th><th scope="col" class="num">Cantidad</th></tr></thead>
+        <tbody>
+          <% componentes.forEach((c) => { %>
+            <tr>
+              <td><a class="enlace-fila" href="/productos/<%= c.id_producto %>"><%= c.nombre %></a></td>
+              <td class="num"><%= fmt.cop(c.precio) %></td>
+              <td class="num"><%= c.cantidad %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<section class="bloque" aria-labelledby="combos-titulo">
+  <h2 class="seccion" id="combos-titulo">Aparece en los combos</h2>
+  <% if (combos.length === 0) { %>
+    <p class="texto">Este producto no aparece en otros combos.</p>
+  <% } else { %>
+    <ul>
+      <% combos.forEach((c) => { %><li><a href="/productos/<%= c.id_producto %>"><%= c.nombre %></a></li><% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<section class="bloque bloque--peligro" aria-labelledby="peligro-titulo">
+  <h2 class="seccion" id="peligro-titulo">Eliminar</h2>
+  <details class="confirmar">
+    <summary class="boton boton--secundario">Eliminar (si ya se vendió, se marca no disponible)</summary>
+    <form class="confirmar__panel" action="/productos/<%= producto.id_producto %>/eliminar" method="post">
+      <span>Si el producto se vendió o forma parte de un combo, se conservará como no disponible.</span>
+      <button class="boton boton--peligro" type="submit">Confirmar</button>
+    </form>
+  </details>
+</section>
+<%- include('../partials/pie') %>

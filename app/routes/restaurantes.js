@@ -69,11 +69,13 @@ router.post('/', async (req, res) => {
 });
 
 async function mostrarDetalle(res, id, { ok = null, aviso = null, status = 200 } = {}) {
-  const [[restaurante]] = await callProc('sp_restaurante_obtener', [id]);
+  const [[restaurante], productos, componentes] = await callProc('sp_producto_menu', [id]);
   res.status(status).render('restaurantes/detalle', {
     titulo: restaurante.nombre,
     activo: '/restaurantes',
     restaurante,
+    productos,
+    componentes,
     ok,
     aviso,
   });
