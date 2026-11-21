@@ -14,7 +14,7 @@ import { traducirErrorMySQL } from './errores.js';
 export const pool = mysql.createPool({
   ...config.db,
   connectionLimit: 10,
-  dateStrings: true,          // DATE/DATETIME llegan como texto "2001-03-14", sin líos de zona horaria
+  dateStrings: ['DATE'],      // DATE llega como YYYY-MM-DD; DATETIME conserva su tipo Date
   multipleStatements: false,  // seguridad: prohíbe "x; DROP TABLE ..." en una sola llamada
   charset: 'utf8mb4',
 });
