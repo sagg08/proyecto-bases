@@ -1,0 +1,71 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedir/restaurantes">Restaurantes</a> / Carrito</nav>
+    <h1 class="titulo">Tu carrito</h1>
+    <% if (restaurante) { %><p class="texto">De <%= restaurante.nombre %></p><% } %>
+  </div>
+</header>
+
+<% if (lineas.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo">Tu carrito está vacío</p>
+    <p class="texto">Elige un restaurante y agrega productos a tu pedido.</p>
+    <a class="boton boton--secundario" href="/pedir/restaurantes">Ver restaurantes</a>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Producto</th>
+          <th scope="col" class="num">Precio</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col" class="num">Subtotal</th>
+          <th scope="col"><span class="sr-only">Quitar</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% lineas.forEach((l) => { %>
+          <tr class="<%= l.disponible ? '' : 'fila--no-disponible' %>">
+            <td><%= l.nombre %><% if (!l.disponible) { %> · <span class="fila-menu__estado">ya no disponible</span><% } %></td>
+            <td class="num mono"><%= fmt.cop(l.precio) %></td>
+            <td>
+              <span class="cantidad">
+                <form action="/pedir/carrito/<%= l.id_producto %>/restar" method="post">
+                  <button class="boton boton--secundario" type="submit" aria-label="Quitar una unidad de <%= l.nombre %>">
+                    <svg aria-hidden="true"><use href="#i-menos"/></svg>
+                  </button>
+                </form>
+                <span class="cantidad__valor"><%= l.cantidad %></span>
+                <form action="/pedir/carrito/<%= l.id_producto %>/sumar" method="post">
+                  <button class="boton boton--secundario" type="submit" aria-label="Agregar una unidad de <%= l.nombre %>">
+                    <svg aria-hidden="true"><use href="#i-mas"/></svg>
+                  </button>
+                </form>
+              </span>
+            </td>
+            <td class="num mono"><%= fmt.cop(l.subtotal) %></td>
+            <td class="acciones-celda">
+              <form action="/pedir/carrito/<%= l.id_producto %>/quitar" method="post">
+                <button class="boton boton--fantasma" type="submit" aria-label="Quitar <%= l.nombre %> del carrito">
+                  <svg aria-hidden="true"><use href="#i-equis"/></svg>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="espacio"></div>
+  <%- include('../partials/comanda', { lineas, costoEnvio, total: subtotal + costoEnvio }) %>
+
+  <div class="espacio"></div>
+  <div class="acciones">
+    <a class="boton boton--primario" href="/pedir/confirmar">Continuar</a>
+    <a class="boton boton--fantasma" href="/pedir/restaurantes/<%= restaurante.id_restaurante %>">Seguir agregando</a>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

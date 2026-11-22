@@ -1,0 +1,54 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">¿Quién pide?</h1>
+    <p class="texto">Elige con qué cliente vas a simular el pedido. No hay inicio de sesión real.</p>
+  </div>
+</header>
+
+<% if (typeof aviso !== 'undefined' && aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+
+<form class="filtros" role="search" action="/pedir" method="get">
+  <div class="campo">
+    <label class="campo__etiqueta" for="q">Buscar</label>
+    <input class="entrada" id="q" name="q" type="search" value="<%= buscar %>" placeholder="Nombre, apellido o correo…" autocomplete="off" spellcheck="false">
+  </div>
+  <button class="boton boton--secundario" type="submit"><svg aria-hidden="true"><use href="#i-buscar"/></svg>Buscar</button>
+  <% if (buscar) { %><a class="boton boton--fantasma" href="/pedir">Quitar filtro</a><% } %>
+</form>
+
+<% if (clientes.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo">Ningún cliente coincide</p>
+    <p class="texto">Prueba con otra parte del nombre o del correo.</p>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Correo</th>
+          <th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% clientes.forEach((c) => { %>
+          <tr>
+            <td class="id"><%= fmt.id(c.id_cliente) %></td>
+            <td><%= fmt.nombre(c) %></td>
+            <td class="recortar"><%= c.email %></td>
+            <td class="acciones-celda">
+              <form action="/pedir/quien" method="post">
+                <input type="hidden" name="id_cliente" value="<%= c.id_cliente %>">
+                <button class="boton boton--primario" type="submit">Pedir como <%= c.nombres %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

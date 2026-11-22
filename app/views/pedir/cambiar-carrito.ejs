@@ -1,0 +1,22 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Tu carrito es de otro restaurante</h1>
+    <p class="texto">El carrito solo admite productos de un restaurante a la vez.</p>
+  </div>
+</header>
+
+<%- include('../partials/aviso', {
+  tipo: 'info', titulo: null,
+  mensaje: `Tienes productos de "${restauranteActual ? restauranteActual.nombre : 'otro restaurante'}" en el carrito. Si agregas algo de "${restaurante.nombre}", el carrito actual se vaciará.`,
+}) %>
+<div class="espacio"></div>
+
+<div class="acciones">
+  <form action="/pedir/restaurantes/<%= restaurante.id_restaurante %>/agregar-confirmado" method="post">
+    <input type="hidden" name="id_producto" value="<%= idProducto %>">
+    <button class="boton boton--peligro" type="submit">Vaciar carrito y agregar</button>
+  </form>
+  <a class="boton boton--fantasma" href="/pedir/restaurantes/<%= restaurante.id_restaurante %>">Cancelar</a>
+</div>
+<%- include('../partials/pie') %>

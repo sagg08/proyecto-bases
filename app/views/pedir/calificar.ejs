@@ -1,0 +1,57 @@
+<%- include('../partials/cabeza') %>
+<%
+  const err = (campo) => errores[campo];
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedir/seguimiento/<%= pedido.id_pedido %>">Pedido <%= fmt.id(pedido.id_pedido) %></a> / Calificar</nav>
+    <h1 class="titulo">¿Cómo te fue con <%= pedido.restaurante %>?</h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+
+<form class="formulario" action="/pedir/seguimiento/<%= pedido.id_pedido %>/calificar" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Restaurante</legend>
+    <div class="calificar__estrellas" role="radiogroup" aria-label="Calificación del restaurante">
+      <% [1, 2, 3, 4, 5].forEach((n) => { %>
+        <label class="calificar__estrella">
+          <input type="radio" name="nota_restaurante" value="<%= n %>" required>
+          <svg aria-hidden="true"><use href="#i-estrella"/></svg>
+          <span class="sr-only"><%= n %> estrella<%= n > 1 ? 's' : '' %></span>
+        </label>
+      <% }) %>
+    </div>
+    <% if (err('nota_restaurante')) { %><p class="campo__error"><%= err('nota_restaurante') %></p><% } %>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend class="seccion">Repartidor</legend>
+    <div class="calificar__estrellas" role="radiogroup" aria-label="Calificación del repartidor">
+      <% [1, 2, 3, 4, 5].forEach((n) => { %>
+        <label class="calificar__estrella">
+          <input type="radio" name="nota_repartidor" value="<%= n %>" required>
+          <svg aria-hidden="true"><use href="#i-estrella"/></svg>
+          <span class="sr-only"><%= n %> estrella<%= n > 1 ? 's' : '' %></span>
+        </label>
+      <% }) %>
+    </div>
+    <% if (err('nota_repartidor')) { %><p class="campo__error"><%= err('nota_repartidor') %></p><% } %>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend class="seccion">Comentario (opcional)</legend>
+    <div class="campo<%= err('comentario') ? ' campo--error' : '' %>">
+      <label class="campo__etiqueta" for="comentario">Cuéntanos qué tal</label>
+      <textarea class="area" id="comentario" name="comentario" maxlength="300"></textarea>
+      <% if (err('comentario')) { %><p class="campo__error"><%= err('comentario') %></p><% } %>
+    </div>
+  </fieldset>
+
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit">Enviar calificación</button>
+    <a class="boton boton--fantasma" href="/pedir/seguimiento/<%= pedido.id_pedido %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

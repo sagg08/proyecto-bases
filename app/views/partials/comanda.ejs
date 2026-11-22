@@ -1,0 +1,26 @@
+<%#
+  Comanda: resumen de líneas de un pedido o del carrito.
+  Parámetros: lineas [{ nombre, cantidad, subtotal }], costoEnvio (opcional), total.
+%>
+<div class="comanda">
+  <div class="comanda__lineas">
+    <% lineas.forEach((l) => { %>
+      <div class="comanda__linea">
+        <span class="cant"><%= l.cantidad %>×</span>
+        <span><%= l.nombre %></span>
+        <span class="mono"><%= fmt.cop(l.subtotal) %></span>
+      </div>
+    <% }) %>
+    <% if (typeof costoEnvio !== 'undefined' && costoEnvio !== null) { %>
+      <div class="comanda__linea">
+        <span class="cant" aria-hidden="true">—</span>
+        <span>Envío</span>
+        <span class="mono"><%= fmt.cop(costoEnvio) %></span>
+      </div>
+    <% } %>
+  </div>
+  <div class="comanda__total">
+    <span>Total</span>
+    <span class="num mono"><%= fmt.cop(total) %></span>
+  </div>
+</div>

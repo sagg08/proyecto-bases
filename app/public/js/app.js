@@ -31,4 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputs.length + 1 >= 5) boton.disabled = true;
     });
   });
+
+  // 4. Repartidores: la bicicleta no lleva placa, así que se oculta el campo
+  // (la validación real sigue en zod y en ck_repartidor_placa; esto es solo comodidad).
+  const selectorVehiculo = document.querySelector('[data-tipo-vehiculo]');
+  if (selectorVehiculo) {
+    const campoPlaca = document.querySelector('[data-campo-placa]');
+    const actualizar = () => {
+      const esBicicleta = selectorVehiculo.value === 'bicicleta';
+      campoPlaca.hidden = esBicicleta;
+      campoPlaca.querySelector('input').disabled = esBicicleta;
+    };
+    selectorVehiculo.addEventListener('change', actualizar);
+    actualizar();
+  }
 });

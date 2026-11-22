@@ -1,0 +1,31 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedir">Pedir</a> / Restaurantes</nav>
+    <h1 class="titulo">¿Qué se te antoja?</h1>
+  </div>
+  <%- include('../partials/carrito-link', { numUnidadesCarrito }) %>
+</header>
+
+<form class="filtros" role="search" action="/pedir/restaurantes" method="get">
+  <div class="campo">
+    <label class="campo__etiqueta" for="q">Buscar</label>
+    <input class="entrada" id="q" name="q" type="search" value="<%= buscar %>" placeholder="Nombre del restaurante…" autocomplete="off" spellcheck="false">
+  </div>
+  <button class="boton boton--secundario" type="submit"><svg aria-hidden="true"><use href="#i-buscar"/></svg>Buscar</button>
+  <% if (buscar) { %><a class="boton boton--fantasma" href="/pedir/restaurantes">Quitar filtro</a><% } %>
+</form>
+
+<% if (restaurantes.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo">Ningún restaurante coincide</p>
+    <p class="texto">Prueba con otro nombre.</p>
+  </div>
+<% } else { %>
+  <div class="rejilla-restaurantes">
+    <% restaurantes.forEach((r) => { %>
+      <%- include('../partials/tarjeta-restaurante', { restaurante: r, href: `/pedir/restaurantes/${r.id_restaurante}` }) %>
+    <% }) %>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

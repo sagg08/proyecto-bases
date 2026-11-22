@@ -1,0 +1,6 @@
+<%# Enlace al carrito con el número de unidades. Parámetro: numUnidadesCarrito. %>
+<a class="enlace-carrito" href="/pedir/carrito">
+  <svg aria-hidden="true"><use href="#i-carrito"/></svg>
+  Carrito
+  <% if (numUnidadesCarrito > 0) { %><span class="enlace-carrito__num"><%= numUnidadesCarrito %></span><% } %>
+</a>

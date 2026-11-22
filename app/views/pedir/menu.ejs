@@ -1,0 +1,24 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedir/restaurantes">Restaurantes</a> / <%= restaurante.nombre %></nav>
+    <h1 class="titulo"><%= restaurante.nombre %></h1>
+    <p class="texto"><%= restaurante.categorias || 'Sin categorías' %> · <%= restaurante.calificacion_promedio == null ? 'Nuevo' : `★ ${Number(restaurante.calificacion_promedio).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` %></p>
+  </div>
+  <%- include('../partials/carrito-link', { numUnidadesCarrito }) %>
+</header>
+
+<% if (avisoOtroRestaurante) { %>
+  <%- include('../partials/aviso', { tipo: 'info', titulo: 'Tienes productos de otro restaurante en el carrito', mensaje: 'Si agregas algo de aquí, te preguntaremos si quieres vaciarlo primero.' }) %>
+  <div class="espacio"></div>
+<% } %>
+
+<div class="pedir">
+  <div>
+    <%- include('../partials/menu', { productos, componentes, accionAgregar }) %>
+  </div>
+  <aside class="pedir__carrito">
+    <a class="boton boton--secundario" href="/pedir/carrito"><svg aria-hidden="true"><use href="#i-carrito"/></svg>Ver carrito</a>
+  </aside>
+</div>
+<%- include('../partials/pie') %>

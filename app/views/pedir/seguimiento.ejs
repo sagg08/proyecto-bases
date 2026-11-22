@@ -1,0 +1,38 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedir/restaurantes">Pedir</a> / Pedido <%= fmt.id(pedido.id_pedido) %></nav>
+    <h1 class="titulo">Tu pedido</h1>
+    <p class="texto"><span class="estado estado--<%= claseEstado(pedido.estado_actual) %>"><%= pedido.estado_actual %></span> · <%= pedido.restaurante %></p>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+
+<section class="bloque" aria-labelledby="riel-titulo">
+  <h2 class="seccion" id="riel-titulo">Seguimiento</h2>
+  <%- include('../partials/riel', { historial, flujo, estados }) %>
+</section>
+
+<section class="bloque" aria-labelledby="comanda-titulo">
+  <h2 class="seccion" id="comanda-titulo">Tu pedido</h2>
+  <%- include('../partials/comanda', { lineas, costoEnvio: pedido.costo_envio, total: pedido.total }) %>
+  <p class="texto">Entrega en <%= pedido.calle %> # <%= pedido.numero %>, <%= pedido.barrio %>, <%= pedido.ciudad %> · <%= pedido.metodo_pago %></p>
+</section>
+
+<% if (pedido.estado_actual === 'entregado' && !calificacion) { %>
+  <section class="bloque" aria-labelledby="calificar-titulo">
+    <h2 class="seccion" id="calificar-titulo">¿Cómo te fue?</h2>
+    <a class="boton boton--primario" href="/pedir/seguimiento/<%= pedido.id_pedido %>/calificar"><svg aria-hidden="true"><use href="#i-estrella"/></svg>Calificar este pedido</a>
+  </section>
+<% } else if (calificacion) { %>
+  <section class="bloque" aria-labelledby="calificacion-titulo">
+    <h2 class="seccion" id="calificacion-titulo">Tu calificación</h2>
+    <dl class="datos">
+      <dt>Restaurante</dt><dd><%= fmt.estrellas(calificacion.nota_restaurante) %></dd>
+      <dt>Repartidor</dt><dd><%= fmt.estrellas(calificacion.nota_repartidor) %></dd>
+      <% if (calificacion.comentario) { %><dt>Comentario</dt><dd><%= calificacion.comentario %></dd><% } %>
+    </dl>
+  </section>
+<% } %>
+<%- include('../partials/pie') %>

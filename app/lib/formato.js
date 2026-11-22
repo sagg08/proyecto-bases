@@ -33,4 +33,11 @@ export const fmt = {
 
   /** Nombre compuesto a partir de sus partes */
   nombre: (r) => [r.nombres, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' '),
+
+  /** 4 → "★★★★☆" (redondeo al entero más cercano; '' si no hay calificación) */
+  estrellas: (n) => {
+    if (n == null) return '';
+    const llenas = Math.min(5, Math.max(0, Math.round(Number(n))));
+    return '★'.repeat(llenas) + '☆'.repeat(5 - llenas);
+  },
 };

@@ -1,0 +1,65 @@
+<%- include('../partials/cabeza') %>
+<%
+  const iconoVehiculo = { moto: 'moto', bicicleta: 'bicicleta', carro: 'carro' };
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Repartidores</h1>
+    <p class="texto"><%= repartidores.length %> <%= repartidores.length === 1 ? 'repartidor' : 'repartidores' %><%= buscar ? ` que coinciden con "${buscar}"` : ' registrados' %></p>
+  </div>
+  <a class="boton boton--primario" href="/repartidores/nuevo"><svg aria-hidden="true"><use href="#i-mas"/></svg>Nuevo repartidor</a>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+
+<form class="filtros" role="search" action="/repartidores" method="get">
+  <div class="campo">
+    <label class="campo__etiqueta" for="q">Buscar</label>
+    <input class="entrada" id="q" name="q" type="search" value="<%= buscar %>" placeholder="Nombre, documento o placa…" autocomplete="off" spellcheck="false">
+  </div>
+  <button class="boton boton--secundario" type="submit"><svg aria-hidden="true"><use href="#i-buscar"/></svg>Buscar</button>
+  <% if (buscar) { %><a class="boton boton--fantasma" href="/repartidores">Quitar filtro</a><% } %>
+</form>
+
+<% if (repartidores.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo"><%= buscar ? 'Ningún repartidor coincide' : 'Aún no hay repartidores' %></p>
+    <p class="texto"><%= buscar ? 'Prueba con otro dato.' : 'Registra el primero para poder asignarle pedidos.' %></p>
+    <a class="boton boton--secundario" href="/repartidores/nuevo">Nuevo repartidor</a>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Documento</th>
+          <th scope="col">Vehículo</th>
+          <th scope="col" class="num">Pedidos</th>
+          <th scope="col">Calificación</th>
+          <th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% repartidores.forEach((r) => { %>
+          <tr>
+            <td class="id"><%= fmt.id(r.id_repartidor) %></td>
+            <td><a class="enlace-fila" href="/repartidores/<%= r.id_repartidor %>"><%= fmt.nombre(r) %></a></td>
+            <td class="mono"><%= r.documento %></td>
+            <td>
+              <span class="vehiculo">
+                <svg aria-hidden="true"><use href="#i-<%= iconoVehiculo[r.tipo_vehiculo] %>"/></svg>
+                <span class="mono"><%= r.placa || 'sin placa' %></span>
+              </span>
+            </td>
+            <td class="num"><%= r.num_pedidos %></td>
+            <td><%= r.calificacion_promedio == null ? 'Sin calificaciones' : `★ ${Number(r.calificacion_promedio).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` %></td>
+            <td class="acciones-celda"><a class="boton boton--fantasma" href="/repartidores/<%= r.id_repartidor %>/editar" aria-label="Editar a <%= fmt.nombre(r) %>">Editar</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

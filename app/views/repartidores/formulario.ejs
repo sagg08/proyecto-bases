@@ -1,0 +1,66 @@
+<%- include('../partials/cabeza') %>
+<%
+  const err = (campo) => errores[campo];
+  const valor = (campo) => repartidor[campo] ?? '';
+  const accion = modo === 'crear' ? '/repartidores' : `/repartidores/${repartidor.id_repartidor}/editar`;
+  const volver = modo === 'crear' ? '/repartidores' : `/repartidores/${repartidor.id_repartidor}`;
+  const vehiculoActual = valor('tipo_vehiculo') || 'moto';
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/repartidores">Repartidores</a> / <%= modo === 'crear' ? 'Nuevo' : fmt.id(repartidor.id_repartidor) %></nav>
+    <h1 class="titulo"><%= titulo %></h1>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los campos marcados', mensaje: 'Hay ' + Object.keys(errores).length + ' dato(s) por corregir antes de guardar.' }) %><div class="espacio"></div>
+<% } %>
+
+<form class="formulario" action="<%= accion %>" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Identificación</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'documento', etiqueta: 'Documento', req: true, valor: valor('documento'), error: err('documento'), attrs: 'inputmode="numeric" maxlength="15"' }) %>
+    </div>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend class="seccion">Nombre</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'nombres', etiqueta: 'Nombres', req: true, valor: valor('nombres'), error: err('nombres'), attrs: 'autocomplete="given-name" maxlength="60"' }) %>
+      <%- include('../partials/campo', { id: 'primer_apellido', etiqueta: 'Primer apellido', req: true, valor: valor('primer_apellido'), error: err('primer_apellido'), attrs: 'autocomplete="family-name" maxlength="40"' }) %>
+      <%- include('../partials/campo', { id: 'segundo_apellido', etiqueta: 'Segundo apellido', req: false, valor: valor('segundo_apellido'), error: err('segundo_apellido'), attrs: 'maxlength="40"', ayuda: 'Opcional.' }) %>
+    </div>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend class="seccion">Contacto y vehículo</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'telefono', etiqueta: 'Teléfono', req: true, valor: valor('telefono'), error: err('telefono'), tipo: 'tel', attrs: 'autocomplete="tel" maxlength="15"' }) %>
+      <div class="campo<%= err('tipo_vehiculo') ? ' campo--error' : '' %>">
+        <label class="campo__etiqueta" for="tipo_vehiculo">Vehículo<span class="req" aria-hidden="true">*</span></label>
+        <select class="selector" id="tipo_vehiculo" name="tipo_vehiculo" data-tipo-vehiculo required>
+          <option value="moto" <%= vehiculoActual === 'moto' ? 'selected' : '' %>>Moto</option>
+          <option value="bicicleta" <%= vehiculoActual === 'bicicleta' ? 'selected' : '' %>>Bicicleta</option>
+          <option value="carro" <%= vehiculoActual === 'carro' ? 'selected' : '' %>>Carro</option>
+        </select>
+        <% if (err('tipo_vehiculo')) { %><p class="campo__error"><%= err('tipo_vehiculo') %></p><% } %>
+      </div>
+      <div class="campo<%= err('placa') ? ' campo--error' : '' %>" data-campo-placa <%= vehiculoActual === 'bicicleta' ? 'hidden' : '' %>>
+        <label class="campo__etiqueta" for="placa">Placa<span class="req" aria-hidden="true">*</span></label>
+        <input class="entrada mono" id="placa" name="placa" type="text" value="<%= valor('placa') %>" maxlength="10" autocapitalize="characters"
+               <%= vehiculoActual === 'bicicleta' ? 'disabled' : 'required' %>>
+        <% if (err('placa')) { %><p class="campo__error"><%= err('placa') %></p><% } else { %><p class="campo__ayuda">La bicicleta no lleva placa.</p><% } %>
+      </div>
+      <%- include('../partials/campo', { id: 'fecha_ingreso', etiqueta: 'Fecha de ingreso', req: true, valor: valor('fecha_ingreso'), error: err('fecha_ingreso'), tipo: 'date' }) %>
+    </div>
+  </fieldset>
+
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit"><%= modo === 'crear' ? 'Crear repartidor' : 'Guardar cambios' %></button>
+    <a class="boton boton--fantasma" href="<%= volver %>">Cancelar</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

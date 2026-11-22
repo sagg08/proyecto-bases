@@ -1,0 +1,61 @@
+<%- include('../partials/cabeza') %>
+<%
+  const err = (campo) => errores[campo];
+  const valor = (campo) => pedido[campo] ?? '';
+  const metodoActual = valor('metodo_pago');
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedir/carrito">Carrito</a> / Confirmar</nav>
+    <h1 class="titulo">Confirmar pedido</h1>
+    <p class="texto">De <%= restaurante.nombre %></p>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+<% if (Object.keys(errores).length && !aviso) { %>
+  <%- include('../partials/aviso', { tipo: 'error', titulo: 'Revisa los campos marcados', mensaje: 'Hay ' + Object.keys(errores).length + ' dato(s) por corregir antes de enviar.' }) %><div class="espacio"></div>
+<% } %>
+
+<%- include('../partials/comanda', { lineas, costoEnvio, total: subtotal + costoEnvio }) %>
+<div class="espacio"></div>
+
+<form class="formulario" action="/pedir/confirmar" method="post" novalidate data-formulario>
+  <fieldset class="grupo">
+    <legend class="seccion">Dirección de entrega</legend>
+    <div class="fila">
+      <%- include('../partials/campo', { id: 'calle', etiqueta: 'Calle', req: true, valor: valor('calle'), error: err('calle'), attrs: 'maxlength="60"', ayuda: 'Ej. Calle 15' }) %>
+      <%- include('../partials/campo', { id: 'numero', etiqueta: 'Número', req: true, valor: valor('numero'), error: err('numero'), attrs: 'maxlength="20"', ayuda: 'Ej. # 5-23' }) %>
+      <%- include('../partials/campo', { id: 'barrio', etiqueta: 'Barrio', req: true, valor: valor('barrio'), error: err('barrio'), attrs: 'maxlength="60"' }) %>
+      <%- include('../partials/campo', { id: 'ciudad', etiqueta: 'Ciudad', req: true, valor: valor('ciudad'), error: err('ciudad'), attrs: 'maxlength="60"' }) %>
+    </div>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend class="seccion">Método de pago</legend>
+    <div class="metodo-pago" role="radiogroup" aria-label="Método de pago">
+      <label class="metodo-pago__opcion">
+        <input type="radio" name="metodo_pago" value="efectivo" <%= metodoActual === 'efectivo' ? 'checked' : '' %> required>
+        <svg aria-hidden="true"><use href="#i-efectivo"/></svg>
+        Efectivo
+      </label>
+      <label class="metodo-pago__opcion">
+        <input type="radio" name="metodo_pago" value="tarjeta" <%= metodoActual === 'tarjeta' ? 'checked' : '' %>>
+        <svg aria-hidden="true"><use href="#i-tarjeta"/></svg>
+        Tarjeta
+      </label>
+      <label class="metodo-pago__opcion">
+        <input type="radio" name="metodo_pago" value="transferencia" <%= metodoActual === 'transferencia' ? 'checked' : '' %>>
+        <svg aria-hidden="true"><use href="#i-transferencia"/></svg>
+        Transferencia
+      </label>
+    </div>
+    <% if (err('metodo_pago')) { %><p class="campo__error"><%= err('metodo_pago') %></p><% } %>
+  </fieldset>
+
+  <div class="acciones">
+    <button class="boton boton--primario" type="submit">Enviar pedido</button>
+    <a class="boton boton--fantasma" href="/pedir/carrito">Volver al carrito</a>
+  </div>
+</form>
+<%- include('../partials/pie') %>

@@ -1,0 +1,29 @@
+<%#
+  Riel de HISTORIAL_ESTADO: lo pasado (hecho), el último paso (actual) y,
+  si el pedido sigue su curso, lo que falta (pendiente) según el flujo normal.
+  Parámetros: historial (de sp_pedido_obtener), flujo (ids en orden, p. ej. [1,2,3,4]), estados (metadatos).
+%>
+<%
+  const vistos = new Set(historial.map((h) => h.id_estado));
+  const cancelado = historial.some((h) => h.id_estado === 5);
+%>
+<ol class="riel">
+  <% historial.forEach((h, i) => { %>
+    <li class="riel__paso <%= i === historial.length - 1 ? 'riel__paso--actual' : 'riel__paso--hecho' %>">
+      <span class="riel__punto" aria-hidden="true"></span>
+      <div>
+        <p class="riel__nombre"><%= h.estado.charAt(0).toUpperCase() + h.estado.slice(1) %></p>
+        <% if (h.observacion) { %><p class="riel__nota"><%= h.observacion %></p><% } %>
+      </div>
+      <span class="riel__hora"><%= fmt.hora(h.fecha_hora) %> · <%= fmt.fecha(h.fecha_hora) %></span>
+    </li>
+  <% }) %>
+  <% if (!cancelado) { %>
+    <% flujo.filter((id) => !vistos.has(id)).forEach((id) => { %>
+      <li class="riel__paso riel__paso--pendiente">
+        <span class="riel__punto" aria-hidden="true"></span>
+        <p class="riel__nombre"><%= estados.find((e) => e.id === id)?.texto %></p>
+      </li>
+    <% }) %>
+  <% } %>
+</ol>

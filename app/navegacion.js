@@ -4,9 +4,12 @@
  * y monta su router en server.js. Los no listos se muestran deshabilitados.
  */
 export const navegacion = [
+  { grupo: 'Pedir', items: [
+    { ruta: '/pedir', texto: 'Pedir a domicilio', icono: 'tienda', listo: true },  // P3
+  ]},
   { grupo: 'Operación', items: [
-    { ruta: '/pedidos',      texto: 'Pedidos',            icono: 'pedido',   listo: false },  // P3
-    { ruta: '/repartidores', texto: 'Repartidores',       icono: 'moto',     listo: false },  // P3
+    { ruta: '/pedidos',      texto: 'Pedidos',            icono: 'pedido',   listo: true  },  // P3
+    { ruta: '/repartidores', texto: 'Repartidores',       icono: 'moto',     listo: true  },  // P3
   ]},
   { grupo: 'Catálogo', items: [
     { ruta: '/clientes',     texto: 'Clientes',           icono: 'cliente',  listo: true  },  // P1

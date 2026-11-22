@@ -1,0 +1,48 @@
+<%- include('../partials/cabeza') %>
+<%
+  const iconoVehiculo = { moto: 'moto', bicicleta: 'bicicleta', carro: 'carro' };
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/repartidores">Repartidores</a> / <span class="mono"><%= fmt.id(repartidor.id_repartidor) %></span></nav>
+    <h1 class="titulo"><%= fmt.nombre(repartidor) %></h1>
+    <p class="texto"><%= repartidor.telefono %></p>
+  </div>
+  <div class="acciones">
+    <a class="boton boton--secundario" href="/repartidores/<%= repartidor.id_repartidor %>/editar"><svg aria-hidden="true"><use href="#i-lapiz"/></svg>Editar</a>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+
+<section class="bloque" aria-labelledby="datos-titulo">
+  <h2 class="seccion" id="datos-titulo">Datos</h2>
+  <dl class="datos">
+    <dt>Documento</dt><dd class="mono"><%= repartidor.documento %></dd>
+    <dt>Vehículo</dt>
+    <dd>
+      <span class="vehiculo">
+        <svg aria-hidden="true"><use href="#i-<%= iconoVehiculo[repartidor.tipo_vehiculo] %>"/></svg>
+        <%= repartidor.tipo_vehiculo %> · <span class="mono"><%= repartidor.placa || 'sin placa' %></span>
+      </span>
+    </dd>
+    <dt>Ingresó</dt><dd><%= fmt.fecha(repartidor.fecha_ingreso) %></dd>
+    <dt>Pedidos entregados</dt><dd class="mono"><%= repartidor.num_pedidos %></dd>
+    <dt>Calificación</dt><dd><%= repartidor.calificacion_promedio == null ? 'Sin calificaciones todavía' : fmt.estrellas(repartidor.calificacion_promedio) + ' ' + Number(repartidor.calificacion_promedio).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) %></dd>
+  </dl>
+</section>
+
+<section class="bloque bloque--peligro" aria-labelledby="peligro-titulo">
+  <h2 class="seccion" id="peligro-titulo">Eliminar</h2>
+  <details class="confirmar">
+    <summary class="boton boton--secundario">Eliminar repartidor</summary>
+    <form class="confirmar__panel" action="/repartidores/<%= repartidor.id_repartidor %>/eliminar" method="post">
+      <span><%= repartidor.num_pedidos > 0
+        ? 'Tiene pedidos asignados: la base de datos rechazará el borrado para conservar el historial.'
+        : 'Esta acción no se puede deshacer.' %></span>
+      <button class="boton boton--peligro" type="submit">Sí, eliminar</button>
+    </form>
+  </details>
+</section>
+<%- include('../partials/pie') %>

@@ -1,0 +1,55 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Pedidos</h1>
+    <p class="texto"><%= pedidos.length %> <%= pedidos.length === 1 ? 'pedido' : 'pedidos' %></p>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+
+<nav class="pestanas" aria-label="Filtrar por estado">
+  <a class="pestana" href="/pedidos" <%- filtroEstado === null ? 'aria-current="page"' : '' %>>Todos</a>
+  <% estados.forEach((e) => { %>
+    <a class="pestana" href="/pedidos?estado=<%= e.id %>" <%- filtroEstado === e.id ? 'aria-current="page"' : '' %>><%= e.texto %></a>
+  <% }) %>
+</nav>
+
+<% if (pedidos.length === 0) { %>
+  <div class="vacio">
+    <p class="subtitulo">No hay pedidos en este estado</p>
+    <p class="texto">Prueba con otra pestaña, o espera a que lleguen desde el flujo "Pedir".</p>
+  </div>
+<% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Restaurante</th>
+          <th scope="col">Repartidor</th>
+          <th scope="col">Entrega</th>
+          <th scope="col">Estado</th>
+          <th scope="col" class="num">Total</th>
+          <th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% pedidos.forEach((p) => { %>
+          <tr>
+            <td class="id"><%= fmt.id(p.id_pedido) %></td>
+            <td><%= fmt.nombre({ nombres: p.cliente_nombres, primer_apellido: p.cliente_apellido }) %></td>
+            <td><%= p.restaurante %></td>
+            <td><%= p.id_repartidor ? fmt.nombre({ nombres: p.repartidor_nombres, primer_apellido: p.repartidor_apellido }) : '—' %></td>
+            <td class="recortar"><%= p.barrio %>, <%= p.ciudad %></td>
+            <td><span class="estado estado--<%= claseEstado(p.estado_actual) %>"><%= p.estado_actual %></span></td>
+            <td class="num"><%= fmt.cop(p.total) %></td>
+            <td class="acciones-celda"><a class="boton boton--fantasma" href="/pedidos/<%= p.id_pedido %>" aria-label="Ver pedido <%= fmt.id(p.id_pedido) %>">Ver</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/pie') %>

@@ -422,3 +422,82 @@ a.guia__titulo { color: var(--accent); }
   .fila-menu { grid-template-columns: 1fr; gap: var(--s-2); }
   .fila-menu__acciones { justify-content: space-between; }
 }
+
+/* ---------- Pedir (P3): layout de dos columnas, carrito fijo a la derecha ---------- */
+.pedir {
+  display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: var(--s-7);
+  align-items: start;
+}
+.pedir__carrito { position: sticky; top: var(--s-5); display: grid; gap: var(--s-4); }
+.pedir__carrito > .boton { width: 100%; }
+@media (max-width: 860px) {
+  .pedir { grid-template-columns: 1fr; }
+  .pedir__carrito { position: static; }
+}
+
+/* Enlace al carrito (contador de unidades) en el encabezado del flujo Pedir */
+.enlace-carrito {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  padding: 0 var(--s-4); min-height: var(--control-h);
+  border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  color: var(--ink); text-decoration: none; font-weight: 500;
+}
+.enlace-carrito:hover { background: var(--sunken); color: var(--ink); }
+.enlace-carrito__num {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.4rem; height: 1.4rem; padding: 0 var(--s-1);
+  background: var(--accent); color: var(--on-accent);
+  border-radius: 999px; font-size: var(--t-xs); font-weight: 700;
+}
+
+/* Rejilla de tarjetas de restaurante (/pedir/restaurantes) */
+.rejilla-restaurantes {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: var(--s-4);
+}
+
+/* Contador de cantidad "− 2 +" del carrito; cada botón es su propio <form> (sin JS) */
+.cantidad { display: inline-flex; align-items: center; gap: var(--s-2); }
+.cantidad__valor { min-width: 1.5rem; text-align: center; font-family: var(--font-mono); font-weight: 600; }
+.cantidad form { display: inline-flex; }
+.cantidad .boton { min-height: 2rem; min-width: 2rem; padding: 0; }
+
+/* Selector de método de pago: tres opciones grandes (sección 4 del plan) */
+.metodo-pago { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-3); }
+.metodo-pago__opcion {
+  display: grid; justify-items: center; gap: var(--s-2);
+  padding: var(--s-4) var(--s-2); text-align: center;
+  border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  background: var(--surface); cursor: pointer;
+}
+.metodo-pago__opcion input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.metodo-pago__opcion svg { width: 22px; height: 22px; color: var(--ink-2); }
+.metodo-pago__opcion:has(input:focus-visible) { box-shadow: var(--ring); }
+.metodo-pago__opcion:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.metodo-pago__opcion:has(input:checked) svg { color: var(--accent); }
+@media (max-width: 480px) { .metodo-pago { grid-template-columns: 1fr; } }
+
+/* Pestañas por estado del panel de Pedidos (sección 4 del plan) */
+.pestanas { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-bottom: var(--s-5); }
+.pestana {
+  display: inline-flex; align-items: center;
+  min-height: 2.25rem; padding: 0 var(--s-4);
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  color: var(--ink-2); text-decoration: none; font-size: var(--t-sm); font-weight: 500;
+}
+.pestana:hover { background: var(--sunken); color: var(--ink); }
+.pestana[aria-current="page"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* Selector de 1 a 5 estrellas (calificar un pedio entregado) */
+.calificar__estrellas { display: flex; gap: var(--s-2); }
+.calificar__estrella {
+  display: grid; padding: var(--s-1);
+  border-radius: var(--r-sm); cursor: pointer;
+}
+.calificar__estrella input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.calificar__estrella svg { width: 1.75rem; height: 1.75rem; color: var(--line-strong); }
+.calificar__estrella:has(input:focus-visible) { box-shadow: var(--ring); }
+.calificar__estrella:has(input:checked) svg { color: var(--st-preparacion); fill: var(--st-preparacion); }
+
+/* Ícono del vehículo de un repartidor, junto a su placa en mono */
+.vehiculo { display: inline-flex; align-items: center; gap: var(--s-2); }
+.vehiculo svg { width: 18px; height: 18px; color: var(--ink-2); flex: none; }

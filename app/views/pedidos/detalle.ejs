@@ -1,0 +1,86 @@
+<%- include('../partials/cabeza') %>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <nav class="migas" aria-label="Migas"><a href="/pedidos">Pedidos</a> / <span class="mono"><%= fmt.id(pedido.id_pedido) %></span></nav>
+    <h1 class="titulo">Pedido <%= fmt.id(pedido.id_pedido) %></h1>
+    <p class="texto"><span class="estado estado--<%= claseEstado(pedido.estado_actual) %>"><%= pedido.estado_actual %></span></p>
+  </div>
+</header>
+
+<% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', ...aviso }) %><div class="espacio"></div><% } %>
+
+<section class="bloque" aria-labelledby="datos-titulo">
+  <h2 class="seccion" id="datos-titulo">Datos</h2>
+  <dl class="datos">
+    <dt>Cliente</dt><dd><a class="enlace-fila" href="/clientes/<%= pedido.id_cliente %>"><%= fmt.nombre({ nombres: pedido.cliente_nombres, primer_apellido: pedido.cliente_apellido, segundo_apellido: pedido.cliente_segundo_apellido }) %></a></dd>
+    <dt>Restaurante</dt><dd><a class="enlace-fila" href="/restaurantes/<%= pedido.id_restaurante %>"><%= pedido.restaurante %></a></dd>
+    <dt>Repartidor</dt>
+    <dd>
+      <% if (pedido.id_repartidor) { %>
+        <a class="enlace-fila" href="/repartidores/<%= pedido.id_repartidor %>"><%= fmt.nombre({ nombres: pedido.repartidor_nombres, primer_apellido: pedido.repartidor_apellido }) %></a>
+      <% } else { %>Sin asignar<% } %>
+    </dd>
+    <dt>Entrega</dt><dd><%= pedido.calle %> # <%= pedido.numero %>, <%= pedido.barrio %>, <%= pedido.ciudad %></dd>
+    <dt>Método de pago</dt><dd><%= pedido.metodo_pago %></dd>
+    <dt>Pedido el</dt><dd><%= fmt.fecha(pedido.fecha_creacion) %> · <%= fmt.hora(pedido.fecha_creacion) %></dd>
+    <% if (pedido.tiempo_entrega_minutos != null) { %><dt>Tiempo de entrega</dt><dd class="mono"><%= pedido.tiempo_entrega_minutos %> min</dd><% } %>
+  </dl>
+</section>
+
+<section class="bloque" aria-labelledby="comanda-titulo">
+  <h2 class="seccion" id="comanda-titulo">Comanda</h2>
+  <%- include('../partials/comanda', { lineas, costoEnvio: pedido.costo_envio, total: pedido.total }) %>
+</section>
+
+<section class="bloque" aria-labelledby="historial-titulo">
+  <h2 class="seccion" id="historial-titulo">Historial</h2>
+  <%- include('../partials/riel', { historial, flujo, estados }) %>
+</section>
+
+<% if (siguiente || puedeCancelar) { %>
+<section class="bloque" aria-labelledby="accion-titulo">
+  <h2 class="seccion" id="accion-titulo">Acción</h2>
+  <% if (siguiente) { %>
+    <form class="formulario" action="/pedidos/<%= pedido.id_pedido %>/avanzar" method="post">
+      <input type="hidden" name="id_estado" value="<%= siguiente %>">
+      <% if (necesitaRepartidor) { %>
+        <div class="campo">
+          <label class="campo__etiqueta" for="id_repartidor">Repartidor<span class="req" aria-hidden="true">*</span></label>
+          <select class="selector" id="id_repartidor" name="id_repartidor" required>
+            <option value="">Selecciona un repartidor…</option>
+            <% repartidores.forEach((r) => { %>
+              <option value="<%= r.id_repartidor %>"><%= fmt.nombre(r) %> · <%= r.tipo_vehiculo %></option>
+            <% }) %>
+          </select>
+          <p class="campo__ayuda">Para pasar a "en camino" el pedido necesita un repartidor asignado.</p>
+        </div>
+      <% } %>
+      <div class="acciones">
+        <button class="boton boton--primario" type="submit"><%= etiquetaSiguiente %></button>
+      </div>
+    </form>
+  <% } %>
+  <% if (puedeCancelar) { %>
+    <details class="confirmar">
+      <summary class="boton boton--fantasma">Cancelar pedido</summary>
+      <form class="confirmar__panel" action="/pedidos/<%= pedido.id_pedido %>/cancelar" method="post">
+        <span>Esta acción no se puede deshacer.</span>
+        <button class="boton boton--peligro" type="submit">Sí, cancelar</button>
+      </form>
+    </details>
+  <% } %>
+</section>
+<% } %>
+
+<% if (calificacion) { %>
+<section class="bloque" aria-labelledby="calificacion-titulo">
+  <h2 class="seccion" id="calificacion-titulo">Calificación del cliente</h2>
+  <dl class="datos">
+    <dt>Restaurante</dt><dd><%= fmt.estrellas(calificacion.nota_restaurante) %> (<%= calificacion.nota_restaurante %>/5)</dd>
+    <dt>Repartidor</dt><dd><%= fmt.estrellas(calificacion.nota_repartidor) %> (<%= calificacion.nota_repartidor %>/5)</dd>
+    <% if (calificacion.comentario) { %><dt>Comentario</dt><dd><%= calificacion.comentario %></dd><% } %>
+  </dl>
+</section>
+<% } %>
+<%- include('../partials/pie') %>
