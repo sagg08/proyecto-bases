@@ -2,6 +2,7 @@
  * scripts/db-setup.js · Crea la base de datos desde cero.
  *
  * Uso:  npm run db:setup          (crea la base DB_NAME de .env, por defecto "domicilios")
+ *       node scripts/db-setup.js archivo.sql (ejecuta solo ese archivo contra "domicilios")
  * Las pruebas lo importan para crear "domicilios_test" sin tocar la base real.
  *
  * Qué hace:
@@ -75,6 +76,40 @@ function cambiarNombreBase(instruccion, nombreBD) {
     : instruccion;
 }
 
+/** Ejecuta un único archivo SQL contra la base domicilios sin recrearla. */
+async function ejecutarArchivoSql(rutaSolicitada) {
+  if (path.extname(rutaSolicitada).toLowerCase() !== '.sql') {
+    throw new Error('El argumento debe ser la ruta de un archivo .sql.');
+  }
+
+  const archivo = path.resolve(raiz, rutaSolicitada);
+  const instrucciones = partirInstrucciones(fs.readFileSync(archivo, 'utf8'));
+  const conexion = await mysql.createConnection({
+    host: process.env.DB_HOST ?? '127.0.0.1',
+    port: Number(process.env.DB_PORT ?? 3306),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: 'domicilios',
+    charset: 'utf8mb4',
+  });
+
+  try {
+    const nombreArchivo = path.relative(raiz, archivo);
+    process.stdout.write(`Ejecutando ${nombreArchivo} contra "domicilios"...\n`);
+    for (const [i, instruccion] of instrucciones.entries()) {
+      try {
+        await conexion.query(instruccion);
+      } catch (err) {
+        err.message = `Falló la instrucción ${i + 1} de ${nombreArchivo}:\n${instruccion.slice(0, 300)}\n\nMySQL ${err.errno ?? ''} ${err.code ?? ''}: ${err.message}`;
+        throw err;
+      }
+    }
+    process.stdout.write(`Archivo ejecutado (${instrucciones.length} instrucciones).\n`);
+  } finally {
+    await conexion.end();
+  }
+}
+
 /**
  * Crea la base completa. Lanza un error (no cierra el proceso) para que las pruebas lo atrapen.
  * @param {{ nombreBD?: string, silencioso?: boolean }} opciones
@@ -121,8 +156,17 @@ if (ejecutadoDirecto) main();
 
 async function main() {
   try {
-    await crearBase();
-    console.log('\nBase de datos lista. Ahora: npm start');
+    const argumentos = process.argv.slice(2);
+    if (argumentos.length > 1) {
+      throw new Error('Usa como máximo una ruta de archivo .sql.');
+    }
+    if (argumentos.length === 1) {
+      await ejecutarArchivoSql(argumentos[0]);
+      console.log('\nScript SQL listo.');
+    } else {
+      await crearBase();
+      console.log('\nBase de datos lista. Ahora: npm start');
+    }
   } catch (err) {
     falla(err);
   }

@@ -19,3 +19,4 @@ SOURCE db/05_sp_catalogo.sql;
 -- SOURCE db/05_sp_pedidos.sql;      -- P3: repartidores, pedidos, transacciones
 -- SOURCE db/06_vistas.sql;          -- P4
 -- SOURCE db/05_sp_reportes.sql;     -- P4 (va después de las vistas)
+SOURCE db/09_indices.sql;

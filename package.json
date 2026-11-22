@@ -11,6 +11,7 @@
     "start": "node app/server.js",
     "dev": "node --watch app/server.js",
     "db:setup": "node scripts/db-setup.js",
+    "db:perf": "node scripts/db-setup.js db/perf/generar_5000.sql",
     "db:seed": "node scripts/generar-seed.js",
     "test": "vitest run"
   },
