@@ -270,8 +270,8 @@ router.post('/confirmar', async (req, res) => {
 
 // ---------- Seguimiento ----------
 router.get('/seguimiento/:id', async (req, res) => {
-  const idCliente = exigirCliente(req, res);
-  if (!idCliente) return;
+  // No exige haber elegido cliente: el pedido ya dice de quién es,
+  // así también se llega desde el panel de Pedidos ("Ver como cliente" / "Calificar").
   const id = leerId(req);
 
   const [[pedido], lineas, historial, [calificacion]] = await callProc('sp_pedido_obtener', [id]);
@@ -286,8 +286,8 @@ router.get('/seguimiento/:id', async (req, res) => {
 
 // ---------- Calificar ----------
 router.get('/seguimiento/:id/calificar', async (req, res) => {
-  const idCliente = exigirCliente(req, res);
-  if (!idCliente) return;
+  // No exige haber elegido cliente: el pedido ya dice de quién es,
+  // así también se llega desde el panel de Pedidos ("Ver como cliente" / "Calificar").
   const id = leerId(req);
 
   const [[pedido], , , [calificacion]] = await callProc('sp_pedido_obtener', [id]);
@@ -298,8 +298,8 @@ router.get('/seguimiento/:id/calificar', async (req, res) => {
 });
 
 router.post('/seguimiento/:id/calificar', async (req, res) => {
-  const idCliente = exigirCliente(req, res);
-  if (!idCliente) return;
+  // No exige haber elegido cliente: el pedido ya dice de quién es,
+  // así también se llega desde el panel de Pedidos ("Ver como cliente" / "Calificar").
   const id = leerId(req);
 
   const { datos, errores } = validar(calificarSchema, req.body);

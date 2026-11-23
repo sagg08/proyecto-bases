@@ -5,6 +5,8 @@
     <h1 class="titulo">Pedido <%= fmt.id(pedido.id_pedido) %></h1>
     <p class="texto"><span class="estado estado--<%= claseEstado(pedido.estado_actual) %>"><%= pedido.estado_actual %></span></p>
   </div>
+  <%# Enlace a la vista del cliente (seguimiento tipo Rappi), donde también se califica %>
+  <a class="boton boton--secundario" href="/pedir/seguimiento/<%= pedido.id_pedido %>">Ver como cliente</a>
 </header>
 
 <% if (ok) { %><%- include('../partials/aviso', { tipo: 'ok', titulo: null, mensaje: ok }) %><div class="espacio"></div><% } %>
@@ -70,6 +72,15 @@
       </form>
     </details>
   <% } %>
+</section>
+<% } %>
+
+<%# Entregado y sin calificar: botón para calificar (la calificación la hace el cliente) %>
+<% if (pedido.estado_actual === 'entregado' && !calificacion) { %>
+<section class="bloque" aria-labelledby="calificacion-titulo">
+  <h2 class="seccion" id="calificacion-titulo">Calificación del cliente</h2>
+  <p class="texto">El cliente todavía no ha calificado este pedido.</p>
+  <a class="boton boton--primario" href="/pedir/seguimiento/<%= pedido.id_pedido %>/calificar"><svg aria-hidden="true"><use href="#i-estrella"/></svg>Calificar este pedido</a>
 </section>
 <% } %>
 
