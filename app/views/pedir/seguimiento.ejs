@@ -17,7 +17,7 @@
 <section class="bloque" aria-labelledby="comanda-titulo">
   <h2 class="seccion" id="comanda-titulo">Tu pedido</h2>
   <%- include('../partials/comanda', { lineas, costoEnvio: pedido.costo_envio, total: pedido.total }) %>
-  <p class="texto">Entrega en <%= pedido.calle %> # <%= pedido.numero %>, <%= pedido.barrio %>, <%= pedido.ciudad %> · <%= pedido.metodo_pago %></p>
+  <p class="texto">Entrega en <%= fmt.direccion(pedido) %> · <%= pedido.metodo_pago %></p>
 </section>
 
 <% if (pedido.estado_actual === 'entregado' && !calificacion) { %>

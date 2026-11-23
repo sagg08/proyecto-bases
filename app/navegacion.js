@@ -18,6 +18,6 @@ export const navegacion = [
     { ruta: '/productos',    texto: 'Productos y combos', icono: 'producto', listo: true  },  // P2
   ]},
   { grupo: 'Análisis', items: [
-    { ruta: '/reportes',     texto: 'Reportes',           icono: 'reporte',  listo: false },  // P4
+    { ruta: '/reportes',     texto: 'Reportes',           icono: 'reporte',  listo: true  },  // P4
   ]},
 ];

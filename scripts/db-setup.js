@@ -34,10 +34,11 @@ function leerManifiesto() {
 
 /**
  * Parte un archivo .sql en instrucciones respetando DELIMITER.
+ * Se exporta para que tests/pedidos.test.js ejecute db/07_consultas.sql completo.
  * Las líneas que son solo comentario se descartan para que un ";" dentro
  * de un comentario no corte una instrucción por error.
  */
-function partirInstrucciones(sql) {
+export function partirInstrucciones(sql) {
   const instrucciones = [];
   let delimitador = ';';
   let actual = [];

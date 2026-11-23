@@ -443,6 +443,7 @@ a.guia__titulo { color: var(--accent); }
   color: var(--ink); text-decoration: none; font-weight: 500;
 }
 .enlace-carrito:hover { background: var(--sunken); color: var(--ink); }
+.enlace-carrito svg { width: 18px; height: 18px; flex: none; }   /* sin tamaño el SVG se estiraba en móvil */
 .enlace-carrito__num {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 1.4rem; height: 1.4rem; padding: 0 var(--s-1);
@@ -501,3 +502,43 @@ a.guia__titulo { color: var(--accent); }
 /* Ícono del vehículo de un repartidor, junto a su placa en mono */
 .vehiculo { display: inline-flex; align-items: center; gap: var(--s-2); }
 .vehiculo svg { width: 18px; height: 18px; color: var(--ink-2); flex: none; }
+
+/* ---------------------------------------------------------------------
+   Reportes (P4)
+   --------------------------------------------------------------------- */
+
+/* Indicadores del resumen: cifras sobrias en mono, sin "métricas gigantes" (PRODUCT.md) */
+.indicadores {
+  display: grid; gap: var(--s-3);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+.indicador {
+  display: grid; gap: var(--s-1); align-content: start;
+  padding: var(--s-4); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-md);
+}
+.indicador__valor { font-size: var(--t-xl); font-weight: 600; line-height: 1.2; color: var(--ink); }
+.indicador__nota  { font-size: var(--t-xs); color: var(--ink-3); }
+@media (max-width: 640px) {                     /* móvil: 2 columnas compactas, no 5 tarjetas apiladas */
+  .indicador { padding: var(--s-3); }
+  .indicador__valor { font-size: var(--t-lg); }
+}
+
+/* Cada reporte: pregunta de negocio como título + regla que aplica + tabla */
+.reporte__cabeza { display: grid; gap: var(--s-2); }
+
+/* Barra horizontal en CSS puro. El ancho llega como variable: style="--valor: 42%".
+   Siempre acompaña al número en texto (la barra es aria-hidden). */
+.medida { display: grid; grid-template-columns: minmax(5rem, 1fr) auto; align-items: center; gap: var(--s-3); }
+.medida .num { text-align: right; }
+.tabla .medida-col { min-width: 14rem; }
+.barra {
+  display: block; height: 0.625rem; overflow: hidden;
+  background: var(--sunken); border-radius: var(--r-sm);
+}
+.barra__relleno {
+  display: block; height: 100%; width: var(--valor, 0%);
+  background: var(--accent); border-radius: var(--r-sm);
+}
+.barra--nota .barra__relleno  { background: var(--st-preparacion); }   /* mismo tono que las estrellas */
+.barra--tiempo .barra__relleno { background: var(--st-camino); }

@@ -24,6 +24,7 @@ import productosRouter from './routes/productos.js';
 import repartidoresRouter from './routes/repartidores.js';
 import pedidosRouter from './routes/pedidos.js';
 import pedirRouter from './routes/pedir.js';
+import reportesRouter from './routes/reportes.js';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raiz = path.resolve(aqui, '..');
@@ -60,7 +61,7 @@ app.use('/productos', productosRouter);
 app.use('/repartidores', repartidoresRouter);
 app.use('/pedidos', pedidosRouter);
 app.use('/pedir', pedirRouter);
-// P4: app.use('/reportes', ...);
+app.use('/reportes', reportesRouter);
 
 // ---------- 5. 404 y errores ----------
 app.use((req, res) => {

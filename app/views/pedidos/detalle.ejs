@@ -21,7 +21,7 @@
         <a class="enlace-fila" href="/repartidores/<%= pedido.id_repartidor %>"><%= fmt.nombre({ nombres: pedido.repartidor_nombres, primer_apellido: pedido.repartidor_apellido }) %></a>
       <% } else { %>Sin asignar<% } %>
     </dd>
-    <dt>Entrega</dt><dd><%= pedido.calle %> # <%= pedido.numero %>, <%= pedido.barrio %>, <%= pedido.ciudad %></dd>
+    <dt>Entrega</dt><dd><%= fmt.direccion(pedido) %></dd>
     <dt>Método de pago</dt><dd><%= pedido.metodo_pago %></dd>
     <dt>Pedido el</dt><dd><%= fmt.fecha(pedido.fecha_creacion) %> · <%= fmt.hora(pedido.fecha_creacion) %></dd>
     <% if (pedido.tiempo_entrega_minutos != null) { %><dt>Tiempo de entrega</dt><dd class="mono"><%= pedido.tiempo_entrega_minutos %> min</dd><% } %>

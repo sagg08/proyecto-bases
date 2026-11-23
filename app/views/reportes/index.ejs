@@ -1,0 +1,248 @@
+<%- include('../partials/cabeza') %>
+<%#
+  Reportes (P4). Cada sección = pregunta de negocio como título + regla que
+  aplica + tabla. Las barras son CSS puro (--valor en %), sin librerías.
+  Los números ya vienen calculados por los procedimientos de 05_sp_reportes.sql.
+%>
+<%
+  const pct = (valor, maximo) => (maximo > 0 && valor > 0 ? Math.round((valor / maximo) * 1000) / 10 : 0);
+  const sinDato = (texto) => (texto === '' ? 'Sin datos' : texto);
+  const maxVentas = Math.max(0, ...restaurantes.map((r) => r.ventas));
+  const maxTiempo = Math.max(0, ...zonas.map((z) => z.tiempo_promedio_min ?? 0));
+  const maxMes = Math.max(0, ...meses.map((m) => m.ventas));
+  const iconoVehiculo = { moto: 'moto', bicicleta: 'bicicleta', carro: 'carro' };
+%>
+<header class="encabezado">
+  <div class="encabezado__texto">
+    <h1 class="titulo">Reportes</h1>
+    <p class="texto">Preguntas del negocio respondidas con las vistas de la base de datos. Cuenta como venta solo un pedido <strong>entregado</strong>, sin el costo de envío (el envío lo cobra la plataforma, no el restaurante).</p>
+  </div>
+</header>
+
+<% if (aviso) { %><%- include('../partials/aviso', { tipo: 'error', titulo: aviso.titulo, mensaje: aviso.mensaje }) %><div class="espacio"></div><% } %>
+
+<section aria-labelledby="t-resumen">
+  <h2 class="sr-only" id="t-resumen">Resumen general</h2>
+  <dl class="indicadores">
+    <div class="indicador">
+      <dt class="seccion">Ventas</dt>
+      <dd class="indicador__valor mono"><%= fmt.cop(resumen.ventas) %></dd>
+      <dd class="indicador__nota"><%= resumen.entregados %> pedidos entregados</dd>
+    </div>
+    <div class="indicador">
+      <dt class="seccion">Pedido promedio</dt>
+      <dd class="indicador__valor mono"><%= sinDato(fmt.cop(resumen.ticket_promedio)) %></dd>
+      <dd class="indicador__nota">sin envío</dd>
+    </div>
+    <div class="indicador">
+      <dt class="seccion">Tiempo de entrega</dt>
+      <dd class="indicador__valor mono"><%= sinDato(fmt.minutos(resumen.tiempo_promedio_min)) %></dd>
+      <dd class="indicador__nota">promedio, de recibido a entregado</dd>
+    </div>
+    <div class="indicador">
+      <dt class="seccion">Calificación</dt>
+      <dd class="indicador__valor mono">★ <%= sinDato(fmt.decimal(resumen.nota_restaurantes)) %></dd>
+      <dd class="indicador__nota">restaurantes · repartidores ★ <%= sinDato(fmt.decimal(resumen.nota_repartidores)) %></dd>
+    </div>
+    <div class="indicador">
+      <dt class="seccion">Cancelados</dt>
+      <dd class="indicador__valor mono"><%= sinDato(fmt.decimal(resumen.porcentaje_cancelados)) %> %</dd>
+      <dd class="indicador__nota"><%= resumen.cancelados %> de <%= resumen.pedidos %> pedidos · <%= resumen.en_curso %> en curso</dd>
+    </div>
+  </dl>
+</section>
+
+<form class="filtros espacio-arriba" action="/reportes" method="get" aria-label="Filtros de los reportes">
+  <div class="campo">
+    <label class="campo__etiqueta" for="limite">Restaurantes en el ranking</label>
+    <select class="selector" id="limite" name="limite">
+      <% opcionesLimite.forEach((n) => { %><option value="<%= n %>" <%= n === filtros.limite ? 'selected' : '' %>><%= n === 60 ? 'Todos' : `Top ${n}` %></option><% }) %>
+    </select>
+  </div>
+  <div class="campo">
+    <label class="campo__etiqueta" for="min_calificaciones">Repartidores: mínimo de calificaciones</label>
+    <select class="selector" id="min_calificaciones" name="min_calificaciones">
+      <% opcionesMinCalificaciones.forEach((n) => { %><option value="<%= n %>" <%= n === filtros.min_calificaciones ? 'selected' : '' %>><%= n %> o más</option><% }) %>
+    </select>
+  </div>
+  <div class="campo">
+    <label class="campo__etiqueta" for="ciudad">Tiempos de entrega: ciudad</label>
+    <select class="selector" id="ciudad" name="ciudad">
+      <option value="">Todas</option>
+      <% ciudades.forEach((c) => { %><option value="<%= c %>" <%= c === filtros.ciudad ? 'selected' : '' %>><%= c %></option><% }) %>
+    </select>
+  </div>
+  <button class="boton boton--secundario" type="submit">Aplicar</button>
+  <% if (filtros.limite !== 10 || filtros.min_calificaciones !== 3 || filtros.ciudad) { %><a class="boton boton--fantasma" href="/reportes">Quitar filtros</a><% } %>
+</form>
+
+<%# ---------- 1. Restaurantes ---------- %>
+<section class="bloque reporte" id="restaurantes" aria-labelledby="t-restaurantes">
+  <div class="reporte__cabeza">
+    <h2 class="subtitulo" id="t-restaurantes">¿Qué restaurantes venden más?</h2>
+    <p class="texto">Ranking por ventas de pedidos entregados. Los restaurantes sin ventas también aparecen al final cuando se piden todos. <span class="mono">sp_reporte_restaurantes</span> · <span class="mono">vw_ventas_restaurante</span></p>
+  </div>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col" class="num">#</th>
+          <th scope="col">Restaurante</th>
+          <th scope="col" class="medida-col">Ventas</th>
+          <th scope="col" class="num">Entregados</th>
+          <th scope="col" class="num">Pedido promedio</th>
+          <th scope="col" class="num">Cancelados</th>
+          <th scope="col">Calificación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% restaurantes.forEach((r) => { %>
+          <tr>
+            <td class="num id"><%= r.puesto %></td>
+            <td><a class="enlace-fila" href="/restaurantes/<%= r.id_restaurante %>"><%= r.nombre %></a></td>
+            <td>
+              <div class="medida">
+                <span class="barra" aria-hidden="true"><span class="barra__relleno" style="--valor: <%= pct(r.ventas, maxVentas) %>%"></span></span>
+                <span class="num"><%= fmt.cop(r.ventas) %></span>
+              </div>
+            </td>
+            <td class="num"><%= r.pedidos_entregados %></td>
+            <td class="num"><%= sinDato(fmt.cop(r.ticket_promedio)) %></td>
+            <td class="num"><%= r.pedidos_cancelados %></td>
+            <td><%= r.calificacion_promedio == null ? 'Sin calificaciones' : `★ ${fmt.decimal(r.calificacion_promedio)} (${r.num_calificaciones})` %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%# ---------- 2. Repartidores ---------- %>
+<section class="bloque reporte" id="repartidores" aria-labelledby="t-repartidores">
+  <div class="reporte__cabeza">
+    <h2 class="subtitulo" id="t-repartidores">¿Qué repartidores están mejor calificados?</h2>
+    <p class="texto">Los 10 con mejor nota promedio entre quienes tienen al menos <strong><%= filtros.min_calificaciones %></strong> <%= filtros.min_calificaciones === 1 ? 'calificación' : 'calificaciones' %>, para que una sola nota de 5 no ponga a nadie de primero. En empate gana quien tiene más calificaciones. La barra va de 0 a 5 estrellas. <span class="mono">sp_reporte_repartidores</span> · <span class="mono">vw_desempeno_repartidor</span></p>
+  </div>
+  <% if (repartidores.length === 0) { %>
+    <div class="vacio"><p class="subtitulo">Nadie cumple el mínimo</p><p class="texto">Ningún repartidor tiene <%= filtros.min_calificaciones %> calificaciones o más. Baja el mínimo en los filtros.</p></div>
+  <% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col" class="num">#</th>
+          <th scope="col">Repartidor</th>
+          <th scope="col">Vehículo</th>
+          <th scope="col" class="medida-col">Calificación</th>
+          <th scope="col" class="num">Calificaciones</th>
+          <th scope="col" class="num">Entregas</th>
+          <th scope="col" class="num">Tiempo promedio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% repartidores.forEach((r) => { %>
+          <tr>
+            <td class="num id"><%= r.puesto %></td>
+            <td><a class="enlace-fila" href="/repartidores/<%= r.id_repartidor %>"><%= fmt.nombre(r) %></a></td>
+            <td><span class="vehiculo"><svg aria-hidden="true"><use href="#i-<%= iconoVehiculo[r.tipo_vehiculo] %>"/></svg><%= r.tipo_vehiculo %></span></td>
+            <td>
+              <div class="medida">
+                <span class="barra barra--nota" aria-hidden="true"><span class="barra__relleno" style="--valor: <%= pct(Number(r.calificacion_promedio), 5) %>%"></span></span>
+                <span class="num">★ <%= fmt.decimal(r.calificacion_promedio, 2) %></span>
+              </div>
+            </td>
+            <td class="num"><%= r.num_calificaciones %></td>
+            <td class="num"><%= r.entregas %></td>
+            <td class="num"><%= sinDato(fmt.minutos(r.tiempo_promedio_min)) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</section>
+
+<%# ---------- 3. Tiempos de entrega ---------- %>
+<section class="bloque reporte" id="tiempos" aria-labelledby="t-tiempos">
+  <div class="reporte__cabeza">
+    <h2 class="subtitulo" id="t-tiempos">¿En qué zonas tardamos más en entregar?</h2>
+    <p class="texto">Minutos entre "recibido" y "entregado", por barrio, de la zona más lenta a la más rápida<%= filtros.ciudad ? ` en ${filtros.ciudad}` : '' %>. Un barrio con pocas entregas es menos confiable: revisa la columna Entregas. <span class="mono">sp_reporte_tiempos_entrega</span> · <span class="mono">vw_tiempo_entrega_zona</span></p>
+  </div>
+  <% if (zonas.length === 0) { %>
+    <div class="vacio"><p class="subtitulo">Sin entregas</p><p class="texto">No hay pedidos entregados<%= filtros.ciudad ? ` en ${filtros.ciudad}` : '' %>.</p></div>
+  <% } else { %>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Barrio</th>
+          <th scope="col">Ciudad</th>
+          <th scope="col" class="medida-col">Promedio</th>
+          <th scope="col" class="num">Más rápida</th>
+          <th scope="col" class="num">Más lenta</th>
+          <th scope="col" class="num">Entregas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% zonas.forEach((z) => { %>
+          <tr>
+            <td><%= z.barrio %></td>
+            <td><%= z.ciudad %></td>
+            <td>
+              <div class="medida">
+                <span class="barra barra--tiempo" aria-hidden="true"><span class="barra__relleno" style="--valor: <%= pct(z.tiempo_promedio_min, maxTiempo) %>%"></span></span>
+                <span class="num"><%= fmt.minutos(z.tiempo_promedio_min) %></span>
+              </div>
+            </td>
+            <td class="num"><%= fmt.minutos(z.tiempo_minimo_min) %></td>
+            <td class="num"><%= fmt.minutos(z.tiempo_maximo_min) %></td>
+            <td class="num"><%= z.entregas %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</section>
+
+<%# ---------- 4. Ventas por mes ---------- %>
+<section class="bloque reporte" id="mensual" aria-labelledby="t-mensual">
+  <div class="reporte__cabeza">
+    <h2 class="subtitulo" id="t-mensual">¿Cómo evolucionan las ventas mes a mes?</h2>
+    <p class="texto">Pedidos agrupados por el mes en que se crearon. El mes en curso aparece incompleto. <span class="mono">sp_reporte_ventas_mensuales</span> · <span class="mono">vw_ventas_mensuales</span></p>
+  </div>
+  <div class="tabla-marco">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th scope="col">Mes</th>
+          <th scope="col" class="medida-col">Ventas</th>
+          <th scope="col" class="num">Pedidos</th>
+          <th scope="col" class="num">Entregados</th>
+          <th scope="col" class="num">Cancelados</th>
+          <th scope="col" class="num">Pedido promedio</th>
+          <th scope="col" class="num">Ingresos por envío</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% meses.forEach((m) => { %>
+          <tr>
+            <td class="mono"><%= fmt.mes(m.mes) %></td>
+            <td>
+              <div class="medida">
+                <span class="barra" aria-hidden="true"><span class="barra__relleno" style="--valor: <%= pct(m.ventas, maxMes) %>%"></span></span>
+                <span class="num"><%= fmt.cop(m.ventas) %></span>
+              </div>
+            </td>
+            <td class="num"><%= m.pedidos %></td>
+            <td class="num"><%= m.entregados %></td>
+            <td class="num"><%= m.cancelados %></td>
+            <td class="num"><%= sinDato(fmt.cop(m.ticket_promedio)) %></td>
+            <td class="num"><%= fmt.cop(m.ingresos_envio) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<%- include('../partials/pie') %>
