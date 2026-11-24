@@ -108,12 +108,27 @@ router.get('/restaurantes', async (req, res) => {
   const idCliente = exigirCliente(req, res);
   if (!idCliente) return;
 
+  // Nombre del cliente elegido, para mostrar "Pidiendo como ..." y poder cambiarlo.
+  // Si ese cliente ya no existe (lo borraron), se olvida y se vuelve a elegir.
+  let cliente;
+  try {
+    [[cliente]] = await callProc('sp_cliente_obtener', [idCliente]);
+  } catch (err) {
+    if (err instanceof ErrorApp && err.status === 404) {
+      olvidarClienteElegido(res);
+      vaciarCarrito(res);
+      return res.redirect(303, '/pedir');
+    }
+    throw err;
+  }
+
   const buscar = String(req.query.q ?? '').trim().slice(0, 100);
   const [restaurantes] = await callProc('sp_restaurante_listar', [buscar || null]);
   const carrito = leerCarrito(req);
   res.render('pedir/restaurantes', {
     titulo: 'Pedir a domicilio', activo: '/pedir', restaurantes, buscar,
     numUnidadesCarrito: contarUnidades(carrito),
+    clienteNombre: res.locals.fmt.nombre(cliente),
   });
 });
 

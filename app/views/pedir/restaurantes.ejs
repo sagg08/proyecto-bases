@@ -3,6 +3,11 @@
   <div class="encabezado__texto">
     <nav class="migas" aria-label="Migas"><a href="/pedir">Pedir</a> / Restaurantes</nav>
     <h1 class="titulo">¿Qué se te antoja?</h1>
+    <%# Cliente con el que se está pidiendo (no hay login: se elige en /pedir) %>
+    <form class="acciones" action="/pedir/salir" method="post">
+      <span class="texto">Pidiendo como <strong><%= clienteNombre %></strong></span>
+      <button class="boton boton--fantasma boton--chico" type="submit" title="Vuelve a la lista de clientes y vacía el carrito">Cambiar de cliente</button>
+    </form>
   </div>
   <%- include('../partials/carrito-link', { numUnidadesCarrito }) %>
 </header>
